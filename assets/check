@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# Copyright 2017, Z Lab Corporation. All rights reserved.
+# Copyright 2017, kubernetes resource contributors
+#
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code.
+
+set -e
+set -o pipefail
+
+exec 3>&1 # make stdout available as fd 3 for the result
+exec 1>&2 # redirect all output to stderr for logging
+
+echo "$0 is not implemented."
+# vim: ai ts=2 sw=2 et sts=2 ft=sh

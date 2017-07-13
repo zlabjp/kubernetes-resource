@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -e
+set -o pipefail
+
+[ -z "${DEBUG}" ] || set -x
+
+if ! which erb >/dev/null 2>&1; then
+  echo "Unable to locate the erb CLI" >&2
+  exit 1
+fi
+
+erb -r date ./pipeline.yml.erb > ./pipeline.yml
+git diff ./pipeline.yml
+# vim: ai ts=2 sw=2 et sts=2 ft=sh

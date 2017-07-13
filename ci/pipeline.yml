@@ -1,0 +1,206 @@
+
+# ci/pipeline.yml
+#
+# DO NOT MAKE CHANGES TO THIS FILE. Instead, modify ci/pipeline.yml.erb and
+# execute build-pipeline-yml.
+#
+# created: 2017-07-14T11:38:29+09:00
+#
+resource_types:
+- name: slack-notification
+  type: docker-image
+  source:
+    repository: cfcommunity/slack-notification-resource
+
+- name: file-url
+  type: docker-image
+  source:
+    repository: pivotalservices/concourse-curl-resource
+    tag: latest
+
+resources:
+- name: ubuntu-16.04
+  type: docker-image
+  source:
+    repository: ubuntu
+    tag: "16.04"
+
+- name: kubernetes-resource
+  type: git
+  source:
+    # uri: git://github.com/zlabjp/kubernetes-resoruce.git
+    uri: git@github.com:zlabjp/kubernetes-resource.git
+    # branch: master
+    branch: master
+    private_key: {{git-private-key}}
+
+- name: notify
+  type: slack-notification
+  source:
+    url: {{slack-url}}
+
+
+- name: kubernetes-resource-image-1.6
+  type: docker-image
+  source:
+    # repository: zlabjp/kubernetes-resource
+    repository: quay.corp.zlab.co.jp/superbrothers/kubernetes-resource
+    tag: 1.6
+    username: {{docker-username}}
+    password: {{docker-password}}
+    insecure_registory:
+    - quay.corp.zlab.co.jp
+
+- name: kubernetes-resource-image-1.7
+  type: docker-image
+  source:
+    # repository: zlabjp/kubernetes-resource
+    repository: quay.corp.zlab.co.jp/superbrothers/kubernetes-resource
+    tag: 1.7
+    username: {{docker-username}}
+    password: {{docker-password}}
+    insecure_registory:
+    - quay.corp.zlab.co.jp
+
+- name: kubernetes-resource-image-latest
+  type: docker-image
+  source:
+    # repository: zlabjp/kubernetes-resource
+    repository: quay.corp.zlab.co.jp/superbrothers/kubernetes-resource
+    tag: latest
+    username: {{docker-username}}
+    password: {{docker-password}}
+    insecure_registory:
+    - quay.corp.zlab.co.jp
+
+
+
+- name: stable-1.6
+  type: file-url
+  source:
+    url: https://storage.googleapis.com/kubernetes-release/release/stable-1.6.txt
+    filename: version
+
+- name: stable-1.7
+  type: file-url
+  source:
+    url: https://storage.googleapis.com/kubernetes-release/release/stable-1.7.txt
+    filename: version
+
+- name: latest
+  type: file-url
+  source:
+    url: https://storage.googleapis.com/kubernetes-release/release/latest.txt
+    filename: version
+
+
+jobs:
+
+- name: build-kubernetes-resource-image-1.6
+  public: true
+  serial: true
+  plan:
+  - do:
+    - aggregate:
+      - get: kubernetes-resource
+        trigger: true
+      - get: ubuntu-16.04
+        params: {save: true}
+        trigger: true
+      - get: stable-1.6
+        trigger: true
+    - task: build-build-args-file
+      file: kubernetes-resource/ci/tasks/build-build-args-file.yml
+      input_mapping: {version: stable-1.6}
+    - put: kubernetes-resource-image-1.6
+      params:
+        build: kubernetes-resource
+        load_base: ubuntu-16.04
+        build_args_file: output/build-args-file
+    on_success:
+      put: notify
+      params:
+        username: concourse
+        icon_emoji: ":airplane_departure:"
+        text: |
+          Success! :dancing-penguin: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+    on_failure:
+      put: notify
+      params:
+        username: concourse
+        icon_emoji: ":airplane_arriving:"
+        text: |
+          Failure! :rage: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: build-kubernetes-resource-image-1.7
+  public: true
+  serial: true
+  plan:
+  - do:
+    - aggregate:
+      - get: kubernetes-resource
+        trigger: true
+      - get: ubuntu-16.04
+        params: {save: true}
+        trigger: true
+      - get: stable-1.7
+        trigger: true
+    - task: build-build-args-file
+      file: kubernetes-resource/ci/tasks/build-build-args-file.yml
+      input_mapping: {version: stable-1.7}
+    - put: kubernetes-resource-image-1.7
+      params:
+        build: kubernetes-resource
+        load_base: ubuntu-16.04
+        build_args_file: output/build-args-file
+    on_success:
+      put: notify
+      params:
+        username: concourse
+        icon_emoji: ":airplane_departure:"
+        text: |
+          Success! :dancing-penguin: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+    on_failure:
+      put: notify
+      params:
+        username: concourse
+        icon_emoji: ":airplane_arriving:"
+        text: |
+          Failure! :rage: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: build-kubernetes-resource-image-latest
+  public: true
+  serial: true
+  plan:
+  - do:
+    - aggregate:
+      - get: kubernetes-resource
+        trigger: true
+      - get: ubuntu-16.04
+        params: {save: true}
+        trigger: true
+      - get: latest
+        trigger: true
+    - task: build-build-args-file
+      file: kubernetes-resource/ci/tasks/build-build-args-file.yml
+      input_mapping: {version: latest}
+    - put: kubernetes-resource-image-latest
+      params:
+        build: kubernetes-resource
+        load_base: ubuntu-16.04
+        build_args_file: output/build-args-file
+    on_success:
+      put: notify
+      params:
+        username: concourse
+        icon_emoji: ":airplane_departure:"
+        text: |
+          Success! :dancing-penguin: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+    on_failure:
+      put: notify
+      params:
+        username: concourse
+        icon_emoji: ":airplane_arriving:"
+        text: |
+          Failure! :rage: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
