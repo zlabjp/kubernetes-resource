@@ -43,6 +43,7 @@ Control the Kubernetes cluster like `kubectl apply`, `kubectl delete`, `kubectl 
 
 - `kubectl`: *Required.* Specify the operation that you want to perform on one or more resources, for example `apply`, `delete`, `label`.
 - `wait_until_ready`: *Optional.* The number of seconds that waits until all pods are ready. 0 means don't wait. Defaults to `30`.
+- `wait_until_ready_interval`: *Optional.* The interval (sec) on which to check whether all pods are ready. Defaults to `3`.
 
 ## Example
 

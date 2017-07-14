@@ -103,10 +103,11 @@ current_cluster() {
 
 # wait_until_pods_ready waits for all pods to be ready in the current namespace.
 # $1: The number of seconds that waits until all pods are ready.
+# $2: The interval (sec) on which to check whether all pods are ready.
 wait_until_pods_ready() {
   local period="$1"
+  local interval="$2"
 
-  local interval=2
   local statues not_ready ready
   for ((i=0; i<$period; i+=$interval)); do
     sleep "$interval"
