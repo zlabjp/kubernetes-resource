@@ -88,13 +88,6 @@ jobs:
         build: kubernetes-resource
         load_base: ubuntu-16.04
         build_args_file: output/build-args-file
-    on_success:
-      put: notify
-      params:
-        username: concourse
-        icon_emoji: ":airplane_departure:"
-        text: |
-          Success! :dancing-penguin: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
     on_failure:
       put: notify
       params:
