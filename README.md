@@ -19,7 +19,7 @@ A Concourse resource for controlling the Kubernetes cluster.
 
 - `server`: *Optional.* The address and port of the API server. Requires `token`.
 - `token`: *Required.* Bearer token for authentication to the API server. Requires `server`.
-- `namespace`: *Optional.* The namespace scope. Defaults to `default` if doesn't specify in `kubeconfig`.
+- `namespace`: *Optional.* The namespace scope. Defaults to `default`.
 - `certificate_authority`: *Optional.* A certificate file for the certificate authority.
     ```yaml
     certificate_authority: |
@@ -27,7 +27,7 @@ A Concourse resource for controlling the Kubernetes cluster.
         ...
         -----END CERTIFICATE-----
     ```
-- `insecure_skip_tls_verify`: `Optional.` If true, the API server's certificate will not be checked for validity. This will make your HTTPS connections insecure. Defaults to `false`.
+- `insecure_skip_tls_verify`: *Optional.* If true, the API server's certificate will not be checked for validity. This will make your HTTPS connections insecure. Defaults to `false`.
 
 ## Behavior
 
