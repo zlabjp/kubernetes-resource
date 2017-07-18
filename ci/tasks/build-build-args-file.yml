@@ -3,6 +3,7 @@ image_resource:
   type: docker-image
   source:
     repository: alpine
+    tag: "3.6"
 inputs:
 - name: version
 outputs:
