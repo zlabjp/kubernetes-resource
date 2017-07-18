@@ -50,14 +50,14 @@ setup_kubectl() {
       exit 1
     fi
 
-    local auth_name=auth
-    local cluster_name=cluster
-    local context_name=kubernetes-resource
+    local -r AUTH_NAME=auth
+    local -r CLUSTER_NAME=cluster
+    local -r CONTEXT_NAME=kubernetes-resource
 
     # Build options for kubectl config set-credentials
     # Avoid to expose the token string by using placeholder
     local set_credentials_opts="--token=**********"
-    exe kubectl config set-credentials $auth_name $set_credentials_opts
+    exe kubectl config set-credentials $AUTH_NAME $set_credentials_opts
     # placeholder is replaced with actual token string
     sed -i -e "s/[*]\{10\}/$token/" $KUBECONFIG
 
@@ -71,16 +71,16 @@ setup_kubectl() {
     if [[ "$insecure_skip_tls_verify" == "true" ]]; then
       set_cluster_opts="$set_cluster_opts --insecure-skip-tls-verify"
     fi
-    exe kubectl config set-cluster $cluster_name $set_cluster_opts
+    exe kubectl config set-cluster $CLUSTER_NAME $set_cluster_opts
 
     # Build options for kubectl config set-context
-    local set_context_opts="--user $auth_name --cluster=$cluster_name"
+    local set_context_opts="--user=$AUTH_NAME --cluster=$CLUSTER_NAME"
     if [[ -n "$namespace" ]]; then
       set_context_opts="$set_context_opts --namespace=$namespace"
     fi
-    exe kubectl config set-context $context_name $set_context_opts
+    exe kubectl config set-context $CONTEXT_NAME $set_context_opts
 
-    exe kubectl config use-context $context_name
+    exe kubectl config use-context $CONTEXT_NAME
   fi
 
   # Print information
