@@ -23,10 +23,10 @@ setup_kubectl() {
       exe kubectl config use-context $context
     fi
   else
-    # Optional. Bearer token for authentication to the API server. Requires server.
-    local token="$(jq -r '.source.token // ""' < $payload)"
     # Optional. The address and port of the API server. Requires token.
     local server="$(jq -r '.source.server // ""' < $payload)"
+    # Optional. Bearer token for authentication to the API server. Requires server.
+    local token="$(jq -r '.source.token // ""' < $payload)"
     # Optional. The namespace scope. Defaults to default if doesn't specify in kubeconfig.
     local namespace="$(jq -r '.source.namespace // ""' < $payload)"
     # Optional. A certificate file for the certificate authority.
@@ -35,18 +35,8 @@ setup_kubectl() {
     # validity. This will make your HTTPS connections insecure. Defaults to false.
     local insecure_skip_tls_verify="$(jq -r '.source.insecure_skip_tls_verify // ""' < $payload)"
 
-    if [[ -z "$token" && -z "$server" ]]; then
-      echoerr 'You must specify whether "kubeconfig" or "server", "token".'
-      exit 1
-    fi
-
-    if [[ -z "$token" ]]; then
-      echoerr '"token" must be specified if specify "server".'
-      exit 1
-    fi
-
-    if [[ -z "$server" ]]; then
-      echoerr '"server" must be specified if specify "token".'
+    if [[ -z "$server" || -z "$token" ]]; then
+      echoerr 'You must specify "server" and "token", if not specify "kubeconfig".'
       exit 1
     fi
 
