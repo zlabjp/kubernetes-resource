@@ -52,6 +52,7 @@ Control the Kubernetes cluster like `kubectl apply`, `kubectl delete`, `kubectl 
 - `kubectl`: *Required.* Specify the operation that you want to perform on one or more resources, for example `apply`, `delete`, `label`.
 - `wait_until_ready`: *Optional.* The number of seconds that waits until all pods are ready. 0 means don't wait. Defaults to `30`.
 - `wait_until_ready_interval`: *Optional.* The interval (sec) on which to check whether all pods are ready. Defaults to `3`.
+- `wait_until_ready_selector`: *Optional.* [A label selector](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors) to identify a set of pods which to check whether those are ready. Defaults to every pods in the namespace.
 
 ## Example
 
@@ -84,6 +85,7 @@ jobs:
   - put: kubernetes-production
     params:
       kubectl: apply -f my-app/k8s -f my-app/k8s/production
+      wait_until_ready_selector: app=myapp
 ```
 
 ## License
