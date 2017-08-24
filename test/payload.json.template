@@ -1,0 +1,10 @@
+{
+  "source": {
+    "server": "...",
+    "token": "...",
+    "insecure_skip_tls_verify": true
+  },
+  "params": {
+    "kubectl": "run nginx --image=nginx"
+  }
+}
