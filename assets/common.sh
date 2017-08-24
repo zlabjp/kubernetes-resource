@@ -94,15 +94,19 @@ current_cluster() {
 # wait_until_pods_ready waits for all pods to be ready in the current namespace.
 # $1: The number of seconds that waits until all pods are ready.
 # $2: The interval (sec) on which to check whether all pods are ready.
+# $3: A label selector to identify a set of pods which to check whether those are ready. Defaults to every pods in the namespace.
 wait_until_pods_ready() {
   local period="$1"
   local interval="$2"
+  local selector="${3}"
+
+  echo "Waiting for pods to be ready for ${period}s (interval: ${interval}s, selector: ${selector:-''})"
 
   local statues not_ready ready
   for ((i=0; i<$period; i+=$interval)); do
     sleep "$interval"
 
-    statues="$(kubectl get po -o 'jsonpath={range .items[*]}{.status.conditions[?(@.type=="Ready")].status}{"\n"}{end}')"
+    statues="$(kubectl get po --selector=$selector -o 'jsonpath={range .items[*]}{.status.conditions[?(@.type=="Ready")].status}{"\n"}{end}')"
     not_ready="$(echo "$statues" | grep -c "False" ||:)"
     ready="$(echo "$statues" | grep -c "True" ||:)"
 
@@ -113,7 +117,7 @@ wait_until_pods_ready() {
     fi
   done
 
-  echo "Waited for $period seconds, but all pods are not ready yet."
+  echo "Waited for ${period}s, but all pods are not ready yet."
   return 1
 }
 

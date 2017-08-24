@@ -5,6 +5,7 @@
     "insecure_skip_tls_verify": true
   },
   "params": {
-    "kubectl": "run nginx --image=nginx"
+    "kubectl": "run nginx --image=nginx",
+    "wait_until_ready_selector": "run=nginx"
   }
 }
