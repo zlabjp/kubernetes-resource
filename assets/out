@@ -36,12 +36,9 @@ cd $source_dir
 exe kubectl $kubectl_command
 
 # Optional. The number of seconds that waits until all pods are ready. Defaults to `30`.
-wait_until_ready="$(jq -r '.params.wait_until_ready // ""' < $payload)"
-[[ -z "$wait_until_ready" ]] && wait_until_ready=30
-
+wait_until_ready="$(jq -r '.params.wait_until_ready // 30' < $payload)"
 # Optional. The interval (sec) on which to check whether all pods are ready or not. Defaults to `3`.
-wait_until_ready_interval="$(jq -r '.params.wait_until_ready_interval // ""' < $payload)"
-[[ -z "$wait_until_ready_interval" ]] && wait_until_ready_interval=3
+wait_until_ready_interval="$(jq -r '.params.wait_until_ready_interval // 3' < $payload)"
 
 if [[ "$wait_until_ready" -ne 0 ]]; then
   wait_until_pods_ready $wait_until_ready $wait_until_ready_interval
