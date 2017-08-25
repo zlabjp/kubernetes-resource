@@ -102,13 +102,13 @@ wait_until_pods_ready() {
 
   echo "Waiting for pods to be ready for ${period}s (interval: ${interval}s, selector: ${selector:-''})"
 
-  local statues not_ready ready
+  local statuses not_ready ready
   for ((i=0; i<$period; i+=$interval)); do
     sleep "$interval"
 
-    statues="$(kubectl get po --selector=$selector -o 'jsonpath={range .items[*]}{.status.conditions[?(@.type=="Ready")].status}{"\n"}{end}')"
-    not_ready="$(echo "$statues" | grep -c "False" ||:)"
-    ready="$(echo "$statues" | grep -c "True" ||:)"
+    statuses="$(kubectl get po --selector=$selector -o 'jsonpath={range .items[*]}{.status.conditions[?(@.type=="Ready")].status}{"\n"}{end}')"
+    not_ready="$(echo "$statuses" | grep -c "False" ||:)"
+    ready="$(echo "$statuses" | grep -c "True" ||:)"
 
     echo "Waiting for pods to be ready... ($ready/$(($not_ready + $ready)))"
 
