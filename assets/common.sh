@@ -106,7 +106,7 @@ wait_until_pods_ready() {
   for ((i=0; i<$period; i+=$interval)); do
     sleep "$interval"
 
-    statuses="$(kubectl get po --selector=$selector -o 'jsonpath={range .items[*]}{.status.conditions[?(@.type=="Ready")].status}{"\n"}{end}')"
+    statuses="$(kubectl get po --selector=$selector -o 'jsonpath={range .items[*]}{.metadata.name} {.status.conditions[?(@.type=="Ready")].status}{"\n"}{end}')"
     not_ready="$(echo "$statuses" | grep -c "False" ||:)"
     ready="$(echo "$statuses" | grep -c "True" ||:)"
 
@@ -117,7 +117,8 @@ wait_until_pods_ready() {
     fi
   done
 
-  echo "Waited for ${period}s, but all pods are not ready yet."
+  echo "Waited for ${period}s, but the following pods are not ready yet."
+  echo "$statuses" | awk '{print "- " $1}'
   return 1
 }
 
