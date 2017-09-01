@@ -118,7 +118,7 @@ wait_until_pods_ready() {
   done
 
   echo "Waited for ${period}s, but the following pods are not ready yet."
-  echo "$statuses" | awk '{print "- " $1}'
+  echo "$statuses" | awk '{if ($2 == "False") print "- " $1}'
   return 1
 }
 
