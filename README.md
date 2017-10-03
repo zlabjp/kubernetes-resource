@@ -63,7 +63,7 @@ resource_types:
   type: docker-image
   source:
     repository: zlabjp/kubernetes-resource
-    tag: "1.7"
+    tag: "1.8"
 
 resources:
 - name: kubernetes-production
