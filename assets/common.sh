@@ -102,11 +102,14 @@ wait_until_pods_ready() {
 
   echo "Waiting for pods to be ready for ${period}s (interval: ${interval}s, selector: ${selector:-''})"
 
+  # The list of "<pod-name> <ready(True|False)>" which is excluded terminating pods
+  local template='{{range .items}}{{if not .metadata.deletionTimestamp}}{{.metadata.name}}{{range .status.conditions}}{{if eq .type "Ready"}} {{.status}}{{end}}{{end}}{{"\n"}}{{end}}{{end}}'
+
   local statuses not_ready ready
   for ((i=0; i<$period; i+=$interval)); do
     sleep "$interval"
 
-    statuses="$(kubectl get po --selector=$selector -o 'jsonpath={range .items[*]}{.metadata.name} {.status.conditions[?(@.type=="Ready")].status}{"\n"}{end}')"
+    statuses="$(kubectl get po --selector=$selector -o template --template="$template")"
     not_ready="$(echo "$statuses" | grep -c "False" ||:)"
     ready="$(echo "$statuses" | grep -c "True" ||:)"
 
