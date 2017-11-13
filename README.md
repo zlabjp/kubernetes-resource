@@ -89,6 +89,20 @@ jobs:
       wait_until_ready_selector: app=myapp
 ```
 
+### Force update deployment
+
+```yaml
+jobs:
+- name: force-update-deployment
+  serial: true
+  plan:
+  - put: mycluster
+    params:
+      kubectl: |
+        patch deploy nginx -p '{"spec":{"template":{"metadata":{"labels":{"updated_at":"'$(date +%s)'"}}}}}'
+      wait_until_ready_selector: run=nginx
+```
+
 ## License
 
 This software is released under the MIT License.
