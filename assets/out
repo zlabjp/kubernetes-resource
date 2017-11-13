@@ -33,7 +33,7 @@ fi
 
 cd $source_dir
 
-exe kubectl $kubectl_command
+exe kubectl $(eval "echo $kubectl_command")
 
 # Optional. The number of seconds that waits until all pods are ready. Defaults to `30`.
 wait_until_ready="$(jq -r '.params.wait_until_ready // 30' < $payload)"
