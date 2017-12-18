@@ -4,7 +4,7 @@
 # DO NOT MAKE CHANGES TO THIS FILE. Instead, modify ci/pipeline.yml.erb and
 # execute build-pipeline-yml.
 #
-# created: 2017-09-29T16:24:10+09:00
+# created: 2017-12-18T08:41:45+09:00
 #
 resource_types:
 - name: slack-notification
@@ -68,6 +68,14 @@ resources:
     username: {{docker-username}}
     password: {{docker-password}}
 
+- name: kubernetes-resource-image-1.9
+  type: docker-image
+  source:
+    repository: zlabjp/kubernetes-resource
+    tag: 1.9
+    username: {{docker-username}}
+    password: {{docker-password}}
+
 - name: kubernetes-resource-image-latest
   type: docker-image
   source:
@@ -102,6 +110,12 @@ resources:
   type: file-url
   source:
     url: https://storage.googleapis.com/kubernetes-release/release/stable-1.8.txt
+    filename: version
+
+- name: stable-1.9
+  type: file-url
+  source:
+    url: https://storage.googleapis.com/kubernetes-release/release/stable-1.9.txt
     filename: version
 
 - name: latest
@@ -261,6 +275,44 @@ jobs:
       params:
         channel: {{slack-failure-channel}}
         username: concourse / kubernetes-resource-image-1.8
+        icon_emoji: ":rage:"
+        text: |
+          Failure! $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: build-kubernetes-resource-image-1.9
+  public: true
+  serial: true
+  plan:
+  - do:
+    - aggregate:
+      - get: kubernetes-resource-release
+        trigger: true
+      - get: ubuntu-16.04
+        params: {save: true}
+        trigger: true
+      - get: stable-1.9
+        trigger: true
+    - task: build-build-args-file
+      file: kubernetes-resource-release/ci/tasks/build-build-args-file.yml
+      input_mapping: {version: stable-1.9}
+    - put: kubernetes-resource-image-1.9
+      params:
+        build: kubernetes-resource-release
+        load_base: ubuntu-16.04
+        build_args_file: output/build-args-file
+    on_success:
+      put: notify
+      params:
+        channel: {{slack-success-channel}}
+        username: concourse / kubernetes-resource-image-1.9
+        icon_emoji: ":dancing-penguin:"
+        text: |
+          Success! $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+    on_failure:
+      put: notify
+      params:
+        channel: {{slack-failure-channel}}
+        username: concourse / kubernetes-resource-image-1.9
         icon_emoji: ":rage:"
         text: |
           Failure! $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
