@@ -55,6 +55,7 @@ Control the Kubernetes cluster like `kubectl apply`, `kubectl delete`, `kubectl 
 - `wait_until_ready`: *Optional.* The number of seconds that waits until all pods are ready. 0 means don't wait. Defaults to `30`.
 - `wait_until_ready_interval`: *Optional.* The interval (sec) on which to check whether all pods are ready. Defaults to `3`.
 - `wait_until_ready_selector`: *Optional.* [A label selector](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors) to identify a set of pods which to check whether those are ready. Defaults to every pods in the namespace.
+- `kubeconfig_file`: *Optional.* The path of kubeconfig file. This param has priority over the `kubeconfig` of source configuration.
 
 ## Example
 
@@ -102,6 +103,40 @@ jobs:
       kubectl: |
         patch deploy nginx -p '{"spec":{"template":{"metadata":{"labels":{"updated_at":"'$(date +%s)'"}}}}}'
       wait_until_ready_selector: run=nginx
+```
+
+### Use a remote kubeconfig file fetched by s3-resource
+
+```yaml
+resources:
+- name: k8s-prod
+  type: kubernetes
+
+- name: kubeconfig-file
+  type: s3
+  source:
+    bucket: mybucket
+    versioned_file: config
+    access_key_id: ((s3-access-key))
+    secret_access_key: ((s3-secret))
+
+- name: my-app
+  type: git
+  source:
+    ...
+
+jobs:
+- name: k8s-deploy-prod
+  plan:
+  - aggregate:
+    - get: my-app
+      trigger: true
+    - get: kubeconfig-file
+  - put: k8s-prod
+    params:
+      kubectl: apply -f my-app/k8s -f my-app/k8s/production
+      wait_until_ready_selector: app=myapp
+      kubeconfig_file: kubeconfig-file/config
 ```
 
 ## License

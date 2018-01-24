@@ -12,16 +12,20 @@ setup_kubectl() {
 
   export KUBECONFIG=$(mktemp $TMPDIR/kubernetes-resource-kubeconfig.XXXXXX)
 
-  # Optional. A kubeconfig file.
+  # Optional. The path of kubeconfig file
+  local kubeconfig_file="$(jq -r '.params.kubeconfig_file // ""' < $payload)"
+  # Optional. The content of kubeconfig
   local kubeconfig="$(jq -r '.source.kubeconfig // ""' < $payload)"
-  if [[ -n "$kubeconfig" ]]; then
-    echo "$kubeconfig" > $KUBECONFIG
 
-    # Optional. The name of the kubeconfig context to use.
-    local context="$(jq -r '.source.context // ""' < $payload)"
-    if [[ -n "$context" ]]; then
-      exe kubectl config use-context $context
+  if [[ -n "$kubeconfig_file"  ]]; then
+    if [[ ! -f "$kubeconfig_file" ]]; then
+      echoerr "kubeconfig file '$kubeconfig_file' does not exist"
+      exit 1
     fi
+
+    cat "$kubeconfig_file" > $KUBECONFIG
+  elif [[ -n "$kubeconfig" ]]; then
+    echo "$kubeconfig" > $KUBECONFIG
   else
     # Optional. The address and port of the API server. Requires token.
     local server="$(jq -r '.source.server // ""' < $payload)"
@@ -71,6 +75,12 @@ setup_kubectl() {
     exe kubectl config set-context $CONTEXT_NAME $set_context_opts
 
     exe kubectl config use-context $CONTEXT_NAME
+  fi
+
+  # Optional. The name of the kubeconfig context to use.
+  local context="$(jq -r '.source.context // ""' < $payload)"
+  if [[ -n "$context" ]]; then
+    exe kubectl config use-context $context
   fi
 
   # Print information
