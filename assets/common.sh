@@ -83,9 +83,13 @@ setup_kubectl() {
     exe kubectl config use-context $context
   fi
 
-  # Print information
+  # Display the client and server version information
   exe kubectl version
-  exe kubectl cluster-info
+
+  # Ignore the error from `kubectl cluster-info`. From v1.9.0, this command
+  # fails if it cannot find the cluster services.
+  # See https://github.com/kubernetes/kubernetes/commit/998f33272d90e4360053d64066b9722288a25aae
+  exe kubectl cluster-info 2>/dev/null ||:
 }
 
 # current_namespace outputs the current namespace.
@@ -140,9 +144,9 @@ echoerr() {
   echo -e "\e[01;31mERROR: $@\e[0m"
 }
 
-# exe prints command traces and executes command.
+# exe executes the command after printing the command trace to stdout
 exe() {
-  (set -x; "$@")
+  echo "+ $@"; "$@"
 }
 
 # on_exit prints the last error code if it isning  0.
