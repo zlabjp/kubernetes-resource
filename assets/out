@@ -17,7 +17,10 @@ source $(dirname $0)/common.sh
 # Print the last exit code if it isn't 0 when this process exits
 trap 'on_exit' EXIT
 
+# The first argument is a path to the directory containing the build's full set of sources.
 source_dir=$1
+cd $source_dir
+
 payload=$(mktemp $TMPDIR/kubernetes-resource-request.XXXXXX)
 cat > $payload <&0
 
@@ -30,8 +33,6 @@ if [[ -z "$kubectl_command" ]]; then
   echoerr 'kubectl must be specified in params.'
   exit 1
 fi
-
-cd $source_dir
 
 exe kubectl $(eval "echo $kubectl_command")
 
