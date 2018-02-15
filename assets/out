@@ -34,18 +34,28 @@ if [[ -z "$kubectl_command" ]]; then
   exit 1
 fi
 
+namespace="$(jq -r '.params.namespace // ""' < $payload)"
+if [[ -n "$namespace" ]]; then
+  exe kubectl config set-context $(kubectl config current-context) --namespace="$namespace"
+fi
+
 exe kubectl $(eval "echo $kubectl_command")
 
-# Optional. The number of seconds that waits until all pods are ready. Defaults to `30`.
-wait_until_ready="$(jq -r '.params.wait_until_ready // 30' < $payload)"
-# Optional. The interval (sec) on which to check whether all pods are ready or not. Defaults to `3`.
-wait_until_ready_interval="$(jq -r '.params.wait_until_ready_interval // 3' < $payload)"
-# Optional. A label selector to identify a set of pods which to check whether those are ready. Defaults to every pods in the namespace.
-wait_until_ready_selector="$(jq -r '.params.wait_until_ready_selector // ""' < $payload)"
+# Optional. Specify if we should wait until pods are ready.
+wait_until_ready_enabled="$(jq -r '.params.wait_until_ready_enabled' < $payload)"
 
-if [[ "$wait_until_ready" -ne 0 ]]; then
+# wait if wait_until_ready_enabled is unset, or if it is true (wait by default)
+if [[ -z $wait_until_ready_enabled || $wait_until_ready_enabled == "true" ]] ; then
+  # Optional. The number of seconds that waits until all pods are ready. Defaults to `30`.
+  wait_until_ready="$(jq -r '.params.wait_until_ready // 30' < $payload)"
+  # Optional. The interval (sec) on which to check whether all pods are ready or not. Defaults to `3`.
+  wait_until_ready_interval="$(jq -r '.params.wait_until_ready_interval // 3' < $payload)"
+  # Optional. A label selector to identify a set of pods which to check whether those are ready. Defaults to every pods in the namespace.
+  wait_until_ready_selector="$(jq -r '.params.wait_until_ready_selector // ""' < $payload)"
+
   wait_until_pods_ready "$wait_until_ready" "$wait_until_ready_interval" "$wait_until_ready_selector"
 fi
+
 
 jq --arg kubectl "$kubectl_command" \
    --arg namespace "$(current_namespace)" \
