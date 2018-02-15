@@ -77,6 +77,11 @@ setup_kubectl() {
     exe kubectl config use-context $CONTEXT_NAME
   fi
 
+  local namespace="$(jq -r '.source.namespace // ""' < $payload)"
+  if [[ -n "$namespace" ]]; then
+    exe kubectl config set-context $(kubectl config current-context) --namespace="$namespace"
+  fi
+
   # Optional. The name of the kubeconfig context to use.
   local context="$(jq -r '.source.context // ""' < $payload)"
   if [[ -n "$context" ]]; then
