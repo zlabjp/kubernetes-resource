@@ -2,7 +2,7 @@
   def tag(version); version.sub(/^stable-/, ''); end
   def image_resource_name(version); "kubernetes-resource-image-" + tag(version); end
 
-  kubernetes_versions = %w(stable-1.6 stable-1.7 stable-1.8 stable-1.9 latest)
+  kubernetes_versions = %w(stable-1.6 stable-1.7 stable-1.8 stable-1.9 stable-1.10 latest)
 %>
 # ci/pipeline.yml
 #
@@ -53,7 +53,7 @@ resources:
   type: docker-image
   source:
     repository: zlabjp/kubernetes-resource
-    tag: <%= tag(version) %>
+    tag: "<%= tag(version) %>"
     username: {{docker-username}}
     password: {{docker-password}}
 <% end %>
