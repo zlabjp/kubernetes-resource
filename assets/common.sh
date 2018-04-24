@@ -105,7 +105,8 @@ current_cluster() {
   kubectl config view -o "jsonpath={.clusters[?(@.name==\"${cluster}\")].cluster.server}"
 }
 
-# wait_until_pods_ready waits for all pods to be ready in the current namespace.
+# wait_until_pods_ready waits for all pods to be ready in the current
+# namespace, which are excluded terminating and failed/succeeded pods.
 # $1: The number of seconds that waits until all pods are ready.
 # $2: The interval (sec) on which to check whether all pods are ready.
 # $3: A label selector to identify a set of pods which to check whether those are ready. Defaults to every pods in the namespace.
@@ -116,8 +117,15 @@ wait_until_pods_ready() {
 
   echo "Waiting for pods to be ready for ${period}s (interval: ${interval}s, selector: ${selector:-''})"
 
-  # The list of "<pod-name> <ready(True|False)>" which is excluded terminating pods
-  local template='{{range .items}}{{if not .metadata.deletionTimestamp}}{{.metadata.name}}{{range .status.conditions}}{{if eq .type "Ready"}} {{.status}}{{end}}{{end}}{{"\n"}}{{end}}{{end}}'
+  # The list of "<pod-name> <ready(True|False)>" which is excluded terminating and failed/succeeded pods.
+  local template="$(cat <<EOL
+{{- range .items -}}
+{{- if and (not .metadata.deletionTimestamp) (ne .status.phase "Failed") (ne .status.phase "Succeeded") -}}
+{{.metadata.name}}{{range .status.conditions}}{{if eq .type "Ready"}} {{.status}}{{end}}{{end}}{{"\n"}}
+{{- end -}}
+{{- end -}}
+EOL
+)"
 
   local statuses not_ready ready
   for ((i=0; i<$period; i+=$interval)); do
