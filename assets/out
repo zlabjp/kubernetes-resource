@@ -34,7 +34,7 @@ if [[ -z "$kubectl_command" ]]; then
   exit 1
 fi
 
-exe kubectl $(eval "echo $kubectl_command")
+exeout kubectl $(eval "echo $kubectl_command")
 
 # Optional. The number of seconds that waits until all pods are ready. Defaults to `30`.
 wait_until_ready="$(jq -r '.params.wait_until_ready // 30' < $payload)"
@@ -50,13 +50,15 @@ fi
 jq --arg kubectl "$kubectl_command" \
    --arg namespace "$(current_namespace)" \
    --arg cluster "$(current_cluster)" \
+   --arg output "$output" \
     -n '{
   "version": {
     "kubectl": $kubectl
   },
   "metadata": [
     {"name": "namespace", "value": $namespace},
-    {"name": "cluster", "value": $cluster}
+    {"name": "cluster", "value": $cluster},
+    {"name": "output", "value": $output}
   ]
 }' >&3
 # vim: ai ts=2 sw=2 et sts=2 ft=sh
