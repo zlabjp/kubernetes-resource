@@ -30,8 +30,9 @@ setup_kubectl $payload
 # resources, for example apply, delete, label.
 kubectl_command="$(jq -r '.params.kubectl // ""' < $payload)"
 if [[ -z "$kubectl_command" ]]; then
-  echoerr 'kubectl must be specified in params.'
-  exit 1
+  #echoerr 'kubectl must be specified in params.'
+  echo '{"version":{"ref":"none", "error":"kubectl must be specified in params"}}' >&3
+  exit 0
 fi
 
 exeout kubectl $(eval "echo $kubectl_command")
