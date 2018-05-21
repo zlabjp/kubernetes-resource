@@ -19,7 +19,7 @@ cat > "$PAYLOAD" <&0
 TS=$(jq '.version.timestamp // empty' < "$PAYLOAD")
 
 if [ -z "$TS" ]; then
-  echo '[]' >&3
+  echo '[ { "timestamp": "0" } ]' >&3
 else
   jq -n "[
     { timestamp: $TS }
