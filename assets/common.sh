@@ -158,7 +158,7 @@ exe() {
 }
 
 exeout() {
-  echo "+ $@"; output=$("$@" | tee /dev/stdout);
+  echo "+ $@"; output=$("$@" | tee /dev/stdout)
 }
 
 # on_exit prints the last error code if it isning  0.
