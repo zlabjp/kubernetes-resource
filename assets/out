@@ -47,12 +47,6 @@ if [[ "$wait_until_ready" -ne 0 ]]; then
   wait_until_pods_ready "$wait_until_ready" "$wait_until_ready_interval" "$wait_until_ready_selector"
 fi
 
-echo $1
-echo $output
-mkdir -p /tmp/build/put/kubernetes-dev
-echo "$output" > /tmp/build/put/kubernetes-dev/output
-ls -al /tmp/build/put/kubernetes-dev/
-
 jq --arg kubectl "$kubectl_command" \
    --arg namespace "$(current_namespace)" \
    --arg cluster "$(current_cluster)" \
