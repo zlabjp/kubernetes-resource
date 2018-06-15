@@ -25,12 +25,13 @@ The version of this resource corresponds to the version of kubectl. We recommend
       - cluster:
         ...
     ```
+- `context`: *Optional.* The context to use when specifying a `kubeconfig` or `kubeconfig_file`
 
 ### cluster configs
 
 - `server`: *Optional.* The address and port of the API server. Requires `token`.
 - `token`: *Optional.* Bearer token for authentication to the API server. Requires `server`.
-- `namespace`: *Optional.* The namespace scope. Defaults to `default`.
+- `namespace`: *Optional.* The namespace scope. Defaults to `default`. If set along with `kubeconfig`, `namespace` will override the namespace in the current-context
 - `certificate_authority`: *Optional.* A certificate file for the certificate authority.
     ```yaml
     certificate_authority: |
@@ -53,10 +54,12 @@ Control the Kubernetes cluster like `kubectl apply`, `kubectl delete`, `kubectl 
 #### Parameters
 
 - `kubectl`: *Required.* Specify the operation that you want to perform on one or more resources, for example `apply`, `delete`, `label`.
+- `context`: *Optional.* The context to use when specifying a `kubeconfig` or `kubeconfig_file`
 - `wait_until_ready`: *Optional.* The number of seconds that waits until all pods are ready. 0 means don't wait. Defaults to `30`.
 - `wait_until_ready_interval`: *Optional.* The interval (sec) on which to check whether all pods are ready. Defaults to `3`.
 - `wait_until_ready_selector`: *Optional.* [A label selector](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors) to identify a set of pods which to check whether those are ready. Defaults to every pods in the namespace.
 - `kubeconfig_file`: *Optional.* The path of kubeconfig file. This param has priority over the `kubeconfig` of source configuration.
+- `namespace`: *Optional.* The namespace scope. It will override the namespace in other params and source configuration.
 
 ## Example
 

@@ -31,8 +31,6 @@ setup_kubectl() {
     local server="$(jq -r '.source.server // ""' < $payload)"
     # Optional. Bearer token for authentication to the API server. Requires server.
     local token="$(jq -r '.source.token // ""' < $payload)"
-    # Optional. The namespace scope. Defaults to default if doesn't specify in kubeconfig.
-    local namespace="$(jq -r '.source.namespace // ""' < $payload)"
     # Optional. A certificate file for the certificate authority.
     local certificate_authority="$(jq -r '.source.certificate_authority // ""' < $payload)"
     # Optional. If true, the API server's certificate will not be checked for
@@ -67,14 +65,19 @@ setup_kubectl() {
     fi
     exe kubectl config set-cluster $CLUSTER_NAME $set_cluster_opts
 
-    # Build options for kubectl config set-context
-    local set_context_opts="--user=$AUTH_NAME --cluster=$CLUSTER_NAME"
-    if [[ -n "$namespace" ]]; then
-      set_context_opts="$set_context_opts --namespace=$namespace"
-    fi
-    exe kubectl config set-context $CONTEXT_NAME $set_context_opts
+    exe kubectl config set-context $CONTEXT_NAME --user=$AUTH_NAME --cluster=$CLUSTER_NAME
 
     exe kubectl config use-context $CONTEXT_NAME
+  fi
+
+  # Optional. The namespace scope. Defaults to default if doesn't specify in kubeconfig.
+  local namespace="$(jq -r '.params.namespace // ""' < $payload)"
+  if [[ -z "$namespace" ]]; then
+    # Optional. The namespace scope. Defaults to `default`. If set along with `kubeconfig`, `namespace` will override the namespace in the current-context
+    namespace="$(jq -r '.source.namespace // ""' < $payload)"
+  fi
+  if [[ -n "$namespace" ]]; then
+    exe kubectl config set-context $(kubectl config current-context) --namespace="$namespace"
   fi
 
   # Optional. The name of the kubeconfig context to use.
