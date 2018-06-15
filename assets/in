@@ -12,5 +12,45 @@ set -o pipefail
 exec 3>&1 # make stdout available as fd 3 for the result
 exec 1>&2 # redirect all output to stderr for logging
 
-echo '{"version":{"ref":"none"}}' >&3
+source $(dirname $0)/common.sh
+
+# Print the last exit code if it isn't 0 when this process exits
+trap 'on_exit' EXIT
+
+# The first argument is a path to the directory containing the build's full set of sources.
+source_dir=$1
+cd $source_dir
+
+payload=$(mktemp $TMPDIR/kubernetes-resource-request.XXXXXX)
+cat > $payload <&0
+
+setup_kubectl $payload
+
+# Required. Specify the operation that you want to perform on one or more
+# resources, for example apply, delete, label.
+kubectl_command="$(jq -r '.params.kubectl // ""' < $payload)"
+if [[ -z "$kubectl_command" ]]; then
+  #echoerr 'kubectl must be specified in params.'
+  echo '{"version":{"ref":"none", "error":"kubectl must be specified in params"}}' >&3
+  exit 0
+fi
+
+exeout kubectl $(eval "echo $kubectl_command")
+
+echo $output > ./output
+
+jq --arg kubectl "$kubectl_command" \
+   --arg namespace "$(current_namespace)" \
+   --arg cluster "$(current_cluster)" \
+   --arg output "$output" \
+    -n '{
+  "version": {
+    "kubectl": $kubectl
+  },
+  "metadata": [
+    {"name": "namespace", "value": $namespace},
+    {"name": "cluster", "value": $cluster},
+    {"name": "output", "value": $output}
+  ]
+}' >&3
 # vim: ai ts=2 sw=2 et sts=2 ft=sh

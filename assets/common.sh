@@ -160,6 +160,10 @@ exe() {
   echo "+ $@"; "$@"
 }
 
+exeout() {
+  echo "+ $@"; output=$("$@")
+}
+
 # on_exit prints the last error code if it isning  0.
 on_exit() {
   local code=$?
