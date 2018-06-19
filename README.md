@@ -1,5 +1,7 @@
 # kubernetes-resource
 
+[![Build Status](https://travis-ci.org/zlabjp/kubernetes-resource.svg?branch=master)](https://travis-ci.org/zlabjp/kubernetes-resource)
+
 A Concourse resource for controlling the Kubernetes cluster.
 
 ## Versions
