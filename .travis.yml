@@ -15,6 +15,11 @@ env:
   - MINIKUBE_ARGS="--vm-driver=none --bootstrapper=localkube --extra-config=apiserver.Authorization.Mode=RBAC"
   matrix:
   - KUBE_VERSION=v1.10.0
+  - KUBE_VERSION=v1.11.0
+
+matrix:
+  allow_failures:
+    - env: KUBE_VERSION=v1.11.0
 
 before_script:
 # Download kubectl, which is a requirement for using minikube.
