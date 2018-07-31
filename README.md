@@ -4,6 +4,8 @@
 
 A Concourse resource for controlling the Kubernetes cluster.
 
+*This resource supports AWS EKS.*
+
 ## Versions
 
 The version of this resource corresponds to the version of kubectl. We recommend using different version depending on the kubernetes version of the cluster.
@@ -43,6 +45,8 @@ The version of this resource corresponds to the version of kubectl. We recommend
         -----END CERTIFICATE-----
     ```
 - `insecure_skip_tls_verify`: *Optional.* If true, the API server's certificate will not be checked for validity. This will make your HTTPS connections insecure. Defaults to `false`.
+- `use_aws_iam_authenticator`: *Optional.* If true, the aws_iam_authenticator, required for connecting with EKS, is used. Requires `aws_eks_cluster_name`. Defaults to `false`.
+- `aws_eks_cluster_name`: *Optional.* the AWS EKS cluster name, required when `use_aws_iam_authenticator` is true.
 
 ## Behavior
 

@@ -79,6 +79,26 @@ setup_kubectl() {
     exe kubectl config set-context "$CONTEXT_NAME" --user="$AUTH_NAME" --cluster="$CLUSTER_NAME"
 
     exe kubectl config use-context "$CONTEXT_NAME"
+
+    # Optional. Use the AWS EKS authenticator
+    local use_aws_iam_authenticator
+    use_aws_iam_authenticator="$(jq -r '.source.use_aws_iam_authenticator // ""' < "$payload")"
+    local aws_eks_cluster_name
+    aws_eks_cluster_name="$(jq -r '.source.aws_eks_cluster_name // ""' < "$payload")"
+    if [[ "$use_aws_iam_authenticator" == "true" ]]; then
+      if [ -z $aws_eks_cluster_name ]; then
+        echoerr 'You must specify a clustername when using aws_iam_authenticator.'
+        exit 1
+      fi
+      echo "    exec:
+      apiVersion: client.authentication.k8s.io/v1alpha1
+      args:
+      - token
+      - -i
+      - ${aws_eks_cluster_name}
+      command: aws-iam-authenticator
+      env: null" >> $KUBECONFIG
+    fi
   fi
 
   # Optional. The namespace scope. Defaults to default if doesn't specify in kubeconfig.
