@@ -86,7 +86,7 @@ setup_kubectl() {
     local aws_eks_cluster_name
     aws_eks_cluster_name="$(jq -r '.source.aws_eks_cluster_name // ""' < "$payload")"
     if [[ "$use_aws_iam_authenticator" == "true" ]]; then
-      if [ -z $aws_eks_cluster_name ]; then
+      if [ -z "$aws_eks_cluster_name" ]; then
         echoerr 'You must specify a clustername when using aws_iam_authenticator.'
         exit 1
       fi
@@ -97,7 +97,7 @@ setup_kubectl() {
       - -i
       - ${aws_eks_cluster_name}
       command: aws-iam-authenticator
-      env: null" >> $KUBECONFIG
+      env: null" >> "$KUBECONFIG"
     fi
   fi
 
