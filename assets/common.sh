@@ -139,7 +139,7 @@ wait_until_pods_ready() {
 
   echo "Waiting for pods to be ready for ${period}s (interval: ${interval}s, selector: ${selector:-''})"
 
-  # The list of "<pod-name> <ready(True|False)>" which is excluded terminating and failed/succeeded pods.
+  # The list of "<pod-name> <ready(True|False|`null`)>" which is excluded terminating and failed/succeeded pods.
   template="$(cat <<EOL
 {{- range .items -}}
 {{- if and (not .metadata.deletionTimestamp) (ne .status.phase "Failed") (ne .status.phase "Succeeded") -}}
@@ -154,8 +154,9 @@ EOL
     sleep "$interval"
 
     statuses="$(kubectl get po --selector="$selector" -o template --template="$template")"
-    not_ready="$(echo "$statuses" | grep -c "False" ||:)"
-    ready="$(echo "$statuses" | grep -c "True" ||:)"
+    # Some pods don't have "Ready" condition, so we can't determine "not Ready" using "False".
+    not_ready="$(echo -n "$statuses" | grep -v -c "True" ||:)"
+    ready="$(echo -n "$statuses" | grep -c "True" ||:)"
 
     echo "Waiting for pods to be ready... ($ready/$((not_ready + ready)))"
 
@@ -165,7 +166,7 @@ EOL
   done
 
   echo "Waited for ${period}s, but the following pods are not ready yet."
-  echo "$statuses" | awk '{if ($2 == "False") print "- " $1}'
+  echo "$statuses" | awk '{if ($2 != "True") print "- " $1}'
   return 1
 }
 
