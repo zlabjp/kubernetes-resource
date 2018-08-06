@@ -3,6 +3,7 @@
 load helper
 
 setup() {
+  current_context="$(kubectl config current-context)"
   # Create a temporary namespace for test
   namespace="test-kubernetes-resource-${RANDOM}"
   kubectl create ns "$namespace"
@@ -10,7 +11,7 @@ setup() {
   kubeconfig_file="$(mktemp)"
   kubectl config view --flatten --minify > "$kubeconfig_file"
   # Change the current-context to $namespace
-  kubectl --kubeconfig "$kubeconfig_file" config set-context minikube --namespace "$namespace"
+  kubectl --kubeconfig "$kubeconfig_file" config set-context ${current_context} --namespace "$namespace"
 }
 
 teardown() {
