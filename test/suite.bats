@@ -70,3 +70,12 @@ teardown() {
   assert_not_equal "<no value>" "${lines[0]}"
   assert_success
 }
+
+@test "pending pod" {
+  # Request large resources, so that pod will fall into Pending state
+  run assets/out <<< "$(jq -n '{"source": {"kubeconfig": $kubeconfig}, "params": {"kubectl": $kubectl}}' \
+    --arg kubeconfig "$(cat "$kubeconfig_file")" \
+    --arg kubectl "run nginx --image nginx --requests='cpu=1000'")"
+  assert_match 'deployment.apps "nginx" created' "$output"
+  assert_failure
+}
