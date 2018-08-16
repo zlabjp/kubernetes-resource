@@ -1,3 +1,8 @@
+FROM golang:1.10
+
+RUN set -x && \
+    go get -u -v github.com/kubernetes-sigs/aws-iam-authenticator/cmd/aws-iam-authenticator
+
 FROM ubuntu:16.04
 
 MAINTAINER Kazuki Suda <ksuda@zlab.co.jp>
@@ -6,7 +11,7 @@ ARG KUBERNETES_VERSION=
 
 RUN set -x && \
     apt-get update && \
-    apt-get install -y jq curl git && \
+    apt-get install -y jq curl && \
     [ -z "$KUBERNETES_VERSION" ] && KUBERNETES_VERSION=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt) ||: && \
     curl -s -LO https://storage.googleapis.com/kubernetes-release/release/${KUBERNETES_VERSION}/bin/linux/amd64/kubectl && \
     chmod +x ./kubectl && \
@@ -14,19 +19,7 @@ RUN set -x && \
     kubectl version --client && \
     rm -rf /var/lib/apt/lists/*
 
-ENV LANG en_US.UTF-8
-ENV GOVERSION 1.9.1
-ENV GOROOT /opt/go
-ENV GOPATH /root/.go
-ENV PATH /root/.go/bin:$PATH
-RUN cd /opt && \
-    curl -s -LO https://storage.googleapis.com/golang/go${GOVERSION}.linux-amd64.tar.gz && \
-    tar zxf go${GOVERSION}.linux-amd64.tar.gz && \
-    rm go${GOVERSION}.linux-amd64.tar.gz && \
-    ln -s /opt/go/bin/go /usr/bin/ && \
-    mkdir $GOPATH
-
-RUN go get -u -v github.com/kubernetes-sigs/aws-iam-authenticator/cmd/aws-iam-authenticator
+COPY --from=0 /go/bin/aws-iam-authenticator /usr/local/bin/
 
 RUN mkdir -p /opt/resource
 COPY assets/* /opt/resource/
