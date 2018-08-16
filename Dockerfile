@@ -1,3 +1,8 @@
+FROM golang:1.10
+
+RUN set -x && \
+    go get -u -v github.com/kubernetes-sigs/aws-iam-authenticator/cmd/aws-iam-authenticator
+
 FROM ubuntu:16.04
 
 MAINTAINER Kazuki Suda <ksuda@zlab.co.jp>
@@ -13,6 +18,8 @@ RUN set -x && \
     mv ./kubectl /usr/local/bin/kubectl && \
     kubectl version --client && \
     rm -rf /var/lib/apt/lists/*
+
+COPY --from=0 /go/bin/aws-iam-authenticator /usr/local/bin/
 
 RUN mkdir -p /opt/resource
 COPY assets/* /opt/resource/
