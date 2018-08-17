@@ -3,7 +3,7 @@ FROM golang:1.10
 RUN set -x && \
     go get -u -v github.com/kubernetes-sigs/aws-iam-authenticator/cmd/aws-iam-authenticator
 
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
 MAINTAINER Kazuki Suda <ksuda@zlab.co.jp>
 
