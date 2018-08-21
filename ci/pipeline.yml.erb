@@ -46,7 +46,7 @@ resources:
 - name: notify
   type: slack-notification
   source:
-    url: {{slack-url}}
+    url: ((slack-url))
 
 <% kubernetes_versions.each do |version| %>
 - name: <%= image_resource_name(version) %>
@@ -54,8 +54,8 @@ resources:
   source:
     repository: zlabjp/kubernetes-resource
     tag: "<%= tag(version) %>"
-    username: {{docker-username}}
-    password: {{docker-password}}
+    username: ((docker-username))
+    password: ((docker-password))
 <% end %>
 
 - name: kubernetes-resource-image-edge
@@ -63,8 +63,8 @@ resources:
   source:
     repository: zlabjp/kubernetes-resource
     tag: edge
-    username: {{docker-username}}
-    password: {{docker-password}}
+    username: ((docker-username))
+    password: ((docker-password))
 
 <% kubernetes_versions.each do |version| %>
 - name: <%= version %>
@@ -99,7 +99,7 @@ jobs:
     on_success:
       put: notify
       params:
-        channel: {{slack-success-channel}}
+        channel: ((slack-success-channel))
         username: concourse / <%= image_resource_name("edge") %>
         icon_emoji: ":dancing-penguin:"
         text: |
@@ -107,7 +107,7 @@ jobs:
     on_failure:
       put: notify
       params:
-        channel: {{slack-failure-channel}}
+        channel: ((slack-failure-channel))
         username: concourse / kubernetes-resource:edge
         icon_emoji: ":rage:"
         text: |
@@ -138,7 +138,7 @@ jobs:
     on_success:
       put: notify
       params:
-        channel: {{slack-success-channel}}
+        channel: ((slack-success-channel))
         username: concourse / <%= image_resource_name(version) %>
         icon_emoji: ":dancing-penguin:"
         text: |
@@ -146,7 +146,7 @@ jobs:
     on_failure:
       put: notify
       params:
-        channel: {{slack-failure-channel}}
+        channel: ((slack-failure-channel))
         username: concourse / <%= image_resource_name(version) %>
         icon_emoji: ":rage:"
         text: |
