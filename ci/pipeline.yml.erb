@@ -24,11 +24,11 @@ resource_types:
     tag: latest
 
 resources:
-- name: ubuntu-16.04
+- name: ubuntu-18.04
   type: docker-image
   source:
     repository: ubuntu
-    tag: "16.04"
+    tag: "18.04"
 
 - name: kubernetes-resource
   type: git
@@ -83,7 +83,7 @@ jobs:
     - aggregate:
       - get: kubernetes-resource
         trigger: true
-      - get: ubuntu-16.04
+      - get: ubuntu-18.04
         params: {save: true}
         trigger: true
       - get: latest
@@ -94,7 +94,7 @@ jobs:
     - put: <%= image_resource_name("edge") %>
       params:
         build: kubernetes-resource
-        load_base: ubuntu-16.04
+        load_base: ubuntu-18.04
         build_args_file: output/build-args-file
     on_success:
       put: notify
@@ -122,7 +122,7 @@ jobs:
     - aggregate:
       - get: kubernetes-resource-release
         trigger: true
-      - get: ubuntu-16.04
+      - get: ubuntu-18.04
         params: {save: true}
         trigger: true
       - get: <%= version %>
@@ -133,7 +133,7 @@ jobs:
     - put: <%= image_resource_name(version) %>
       params:
         build: kubernetes-resource-release
-        load_base: ubuntu-16.04
+        load_base: ubuntu-18.04
         build_args_file: output/build-args-file
     on_success:
       put: notify

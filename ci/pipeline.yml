@@ -4,7 +4,7 @@
 # DO NOT MAKE CHANGES TO THIS FILE. Instead, modify ci/pipeline.yml.erb and
 # execute build-pipeline-yml.
 #
-# created: 2018-08-21T15:18:07+09:00
+# created: 2018-08-21T15:40:01+09:00
 #
 resource_types:
 - name: slack-notification
@@ -19,11 +19,11 @@ resource_types:
     tag: latest
 
 resources:
-- name: ubuntu-16.04
+- name: ubuntu-18.04
   type: docker-image
   source:
     repository: ubuntu
-    tag: "16.04"
+    tag: "18.04"
 
 - name: kubernetes-resource
   type: git
@@ -162,7 +162,7 @@ jobs:
     - aggregate:
       - get: kubernetes-resource
         trigger: true
-      - get: ubuntu-16.04
+      - get: ubuntu-18.04
         params: {save: true}
         trigger: true
       - get: latest
@@ -173,7 +173,7 @@ jobs:
     - put: kubernetes-resource-image-edge
       params:
         build: kubernetes-resource
-        load_base: ubuntu-16.04
+        load_base: ubuntu-18.04
         build_args_file: output/build-args-file
     on_success:
       put: notify
@@ -201,7 +201,7 @@ jobs:
     - aggregate:
       - get: kubernetes-resource-release
         trigger: true
-      - get: ubuntu-16.04
+      - get: ubuntu-18.04
         params: {save: true}
         trigger: true
       - get: stable-1.6
@@ -212,7 +212,7 @@ jobs:
     - put: kubernetes-resource-image-1.6
       params:
         build: kubernetes-resource-release
-        load_base: ubuntu-16.04
+        load_base: ubuntu-18.04
         build_args_file: output/build-args-file
     on_success:
       put: notify
@@ -239,7 +239,7 @@ jobs:
     - aggregate:
       - get: kubernetes-resource-release
         trigger: true
-      - get: ubuntu-16.04
+      - get: ubuntu-18.04
         params: {save: true}
         trigger: true
       - get: stable-1.7
@@ -250,7 +250,7 @@ jobs:
     - put: kubernetes-resource-image-1.7
       params:
         build: kubernetes-resource-release
-        load_base: ubuntu-16.04
+        load_base: ubuntu-18.04
         build_args_file: output/build-args-file
     on_success:
       put: notify
@@ -277,7 +277,7 @@ jobs:
     - aggregate:
       - get: kubernetes-resource-release
         trigger: true
-      - get: ubuntu-16.04
+      - get: ubuntu-18.04
         params: {save: true}
         trigger: true
       - get: stable-1.8
@@ -288,7 +288,7 @@ jobs:
     - put: kubernetes-resource-image-1.8
       params:
         build: kubernetes-resource-release
-        load_base: ubuntu-16.04
+        load_base: ubuntu-18.04
         build_args_file: output/build-args-file
     on_success:
       put: notify
@@ -315,7 +315,7 @@ jobs:
     - aggregate:
       - get: kubernetes-resource-release
         trigger: true
-      - get: ubuntu-16.04
+      - get: ubuntu-18.04
         params: {save: true}
         trigger: true
       - get: stable-1.9
@@ -326,7 +326,7 @@ jobs:
     - put: kubernetes-resource-image-1.9
       params:
         build: kubernetes-resource-release
-        load_base: ubuntu-16.04
+        load_base: ubuntu-18.04
         build_args_file: output/build-args-file
     on_success:
       put: notify
@@ -353,7 +353,7 @@ jobs:
     - aggregate:
       - get: kubernetes-resource-release
         trigger: true
-      - get: ubuntu-16.04
+      - get: ubuntu-18.04
         params: {save: true}
         trigger: true
       - get: stable-1.10
@@ -364,7 +364,7 @@ jobs:
     - put: kubernetes-resource-image-1.10
       params:
         build: kubernetes-resource-release
-        load_base: ubuntu-16.04
+        load_base: ubuntu-18.04
         build_args_file: output/build-args-file
     on_success:
       put: notify
@@ -391,7 +391,7 @@ jobs:
     - aggregate:
       - get: kubernetes-resource-release
         trigger: true
-      - get: ubuntu-16.04
+      - get: ubuntu-18.04
         params: {save: true}
         trigger: true
       - get: stable-1.11
@@ -402,7 +402,7 @@ jobs:
     - put: kubernetes-resource-image-1.11
       params:
         build: kubernetes-resource-release
-        load_base: ubuntu-16.04
+        load_base: ubuntu-18.04
         build_args_file: output/build-args-file
     on_success:
       put: notify
@@ -429,7 +429,7 @@ jobs:
     - aggregate:
       - get: kubernetes-resource-release
         trigger: true
-      - get: ubuntu-16.04
+      - get: ubuntu-18.04
         params: {save: true}
         trigger: true
       - get: latest
@@ -440,7 +440,7 @@ jobs:
     - put: kubernetes-resource-image-latest
       params:
         build: kubernetes-resource-release
-        load_base: ubuntu-16.04
+        load_base: ubuntu-18.04
         build_args_file: output/build-args-file
     on_success:
       put: notify
