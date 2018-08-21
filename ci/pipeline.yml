@@ -4,7 +4,7 @@
 # DO NOT MAKE CHANGES TO THIS FILE. Instead, modify ci/pipeline.yml.erb and
 # execute build-pipeline-yml.
 #
-# created: 2018-07-10T15:43:55+09:00
+# created: 2018-08-21T15:18:07+09:00
 #
 resource_types:
 - name: slack-notification
@@ -41,7 +41,7 @@ resources:
 - name: notify
   type: slack-notification
   source:
-    url: {{slack-url}}
+    url: ((slack-url))
 
 
 - name: kubernetes-resource-image-1.6
@@ -49,56 +49,56 @@ resources:
   source:
     repository: zlabjp/kubernetes-resource
     tag: "1.6"
-    username: {{docker-username}}
-    password: {{docker-password}}
+    username: ((docker-username))
+    password: ((docker-password))
 
 - name: kubernetes-resource-image-1.7
   type: docker-image
   source:
     repository: zlabjp/kubernetes-resource
     tag: "1.7"
-    username: {{docker-username}}
-    password: {{docker-password}}
+    username: ((docker-username))
+    password: ((docker-password))
 
 - name: kubernetes-resource-image-1.8
   type: docker-image
   source:
     repository: zlabjp/kubernetes-resource
     tag: "1.8"
-    username: {{docker-username}}
-    password: {{docker-password}}
+    username: ((docker-username))
+    password: ((docker-password))
 
 - name: kubernetes-resource-image-1.9
   type: docker-image
   source:
     repository: zlabjp/kubernetes-resource
     tag: "1.9"
-    username: {{docker-username}}
-    password: {{docker-password}}
+    username: ((docker-username))
+    password: ((docker-password))
 
 - name: kubernetes-resource-image-1.10
   type: docker-image
   source:
     repository: zlabjp/kubernetes-resource
     tag: "1.10"
-    username: {{docker-username}}
-    password: {{docker-password}}
+    username: ((docker-username))
+    password: ((docker-password))
 
 - name: kubernetes-resource-image-1.11
   type: docker-image
   source:
     repository: zlabjp/kubernetes-resource
     tag: "1.11"
-    username: {{docker-username}}
-    password: {{docker-password}}
+    username: ((docker-username))
+    password: ((docker-password))
 
 - name: kubernetes-resource-image-latest
   type: docker-image
   source:
     repository: zlabjp/kubernetes-resource
     tag: "latest"
-    username: {{docker-username}}
-    password: {{docker-password}}
+    username: ((docker-username))
+    password: ((docker-password))
 
 
 - name: kubernetes-resource-image-edge
@@ -106,8 +106,8 @@ resources:
   source:
     repository: zlabjp/kubernetes-resource
     tag: edge
-    username: {{docker-username}}
-    password: {{docker-password}}
+    username: ((docker-username))
+    password: ((docker-password))
 
 
 - name: stable-1.6
@@ -178,7 +178,7 @@ jobs:
     on_success:
       put: notify
       params:
-        channel: {{slack-success-channel}}
+        channel: ((slack-success-channel))
         username: concourse / kubernetes-resource-image-edge
         icon_emoji: ":dancing-penguin:"
         text: |
@@ -186,7 +186,7 @@ jobs:
     on_failure:
       put: notify
       params:
-        channel: {{slack-failure-channel}}
+        channel: ((slack-failure-channel))
         username: concourse / kubernetes-resource:edge
         icon_emoji: ":rage:"
         text: |
@@ -217,7 +217,7 @@ jobs:
     on_success:
       put: notify
       params:
-        channel: {{slack-success-channel}}
+        channel: ((slack-success-channel))
         username: concourse / kubernetes-resource-image-1.6
         icon_emoji: ":dancing-penguin:"
         text: |
@@ -225,7 +225,7 @@ jobs:
     on_failure:
       put: notify
       params:
-        channel: {{slack-failure-channel}}
+        channel: ((slack-failure-channel))
         username: concourse / kubernetes-resource-image-1.6
         icon_emoji: ":rage:"
         text: |
@@ -255,7 +255,7 @@ jobs:
     on_success:
       put: notify
       params:
-        channel: {{slack-success-channel}}
+        channel: ((slack-success-channel))
         username: concourse / kubernetes-resource-image-1.7
         icon_emoji: ":dancing-penguin:"
         text: |
@@ -263,7 +263,7 @@ jobs:
     on_failure:
       put: notify
       params:
-        channel: {{slack-failure-channel}}
+        channel: ((slack-failure-channel))
         username: concourse / kubernetes-resource-image-1.7
         icon_emoji: ":rage:"
         text: |
@@ -293,7 +293,7 @@ jobs:
     on_success:
       put: notify
       params:
-        channel: {{slack-success-channel}}
+        channel: ((slack-success-channel))
         username: concourse / kubernetes-resource-image-1.8
         icon_emoji: ":dancing-penguin:"
         text: |
@@ -301,7 +301,7 @@ jobs:
     on_failure:
       put: notify
       params:
-        channel: {{slack-failure-channel}}
+        channel: ((slack-failure-channel))
         username: concourse / kubernetes-resource-image-1.8
         icon_emoji: ":rage:"
         text: |
@@ -331,7 +331,7 @@ jobs:
     on_success:
       put: notify
       params:
-        channel: {{slack-success-channel}}
+        channel: ((slack-success-channel))
         username: concourse / kubernetes-resource-image-1.9
         icon_emoji: ":dancing-penguin:"
         text: |
@@ -339,7 +339,7 @@ jobs:
     on_failure:
       put: notify
       params:
-        channel: {{slack-failure-channel}}
+        channel: ((slack-failure-channel))
         username: concourse / kubernetes-resource-image-1.9
         icon_emoji: ":rage:"
         text: |
@@ -369,7 +369,7 @@ jobs:
     on_success:
       put: notify
       params:
-        channel: {{slack-success-channel}}
+        channel: ((slack-success-channel))
         username: concourse / kubernetes-resource-image-1.10
         icon_emoji: ":dancing-penguin:"
         text: |
@@ -377,7 +377,7 @@ jobs:
     on_failure:
       put: notify
       params:
-        channel: {{slack-failure-channel}}
+        channel: ((slack-failure-channel))
         username: concourse / kubernetes-resource-image-1.10
         icon_emoji: ":rage:"
         text: |
@@ -407,7 +407,7 @@ jobs:
     on_success:
       put: notify
       params:
-        channel: {{slack-success-channel}}
+        channel: ((slack-success-channel))
         username: concourse / kubernetes-resource-image-1.11
         icon_emoji: ":dancing-penguin:"
         text: |
@@ -415,7 +415,7 @@ jobs:
     on_failure:
       put: notify
       params:
-        channel: {{slack-failure-channel}}
+        channel: ((slack-failure-channel))
         username: concourse / kubernetes-resource-image-1.11
         icon_emoji: ":rage:"
         text: |
@@ -445,7 +445,7 @@ jobs:
     on_success:
       put: notify
       params:
-        channel: {{slack-success-channel}}
+        channel: ((slack-success-channel))
         username: concourse / kubernetes-resource-image-latest
         icon_emoji: ":dancing-penguin:"
         text: |
@@ -453,7 +453,7 @@ jobs:
     on_failure:
       put: notify
       params:
-        channel: {{slack-failure-channel}}
+        channel: ((slack-failure-channel))
         username: concourse / kubernetes-resource-image-latest
         icon_emoji: ":rage:"
         text: |
