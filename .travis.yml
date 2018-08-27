@@ -38,3 +38,4 @@ script:
 - ./scripts/verify-authors.sh
 - make lint
 - make test
+- make image
