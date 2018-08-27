@@ -4,7 +4,7 @@
 # DO NOT MAKE CHANGES TO THIS FILE. Instead, modify ci/pipeline.yml.erb and
 # execute build-pipeline-yml.
 #
-# created: 2018-08-21T15:40:01+09:00
+# created: 2018-08-27T15:50:45+09:00
 #
 resource_types:
 - name: slack-notification

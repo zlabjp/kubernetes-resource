@@ -1,8 +1,10 @@
 <%
+  kubernetes_versions = %w(stable-1.6 stable-1.7 stable-1.8 stable-1.9 stable-1.10 stable-1.11 latest)
   def tag(version); version.sub(/^stable-/, ''); end
   def image_resource_name(version); "kubernetes-resource-image-" + tag(version); end
 
-  kubernetes_versions = %w(stable-1.6 stable-1.7 stable-1.8 stable-1.9 stable-1.10 stable-1.11 latest)
+  base_image = {repository: 'ubuntu', tag: '18.04'}
+  def base_image.to_s; "#{self[:repository]}-#{self[:tag]}"; end
 %>
 # ci/pipeline.yml
 #
@@ -24,11 +26,11 @@ resource_types:
     tag: latest
 
 resources:
-- name: ubuntu-18.04
+- name: <%= base_image %>
   type: docker-image
   source:
-    repository: ubuntu
-    tag: "18.04"
+    repository: <%= base_image[:repository] %>
+    tag: "<%= base_image[:tag] %>"
 
 - name: kubernetes-resource
   type: git
@@ -83,7 +85,7 @@ jobs:
     - aggregate:
       - get: kubernetes-resource
         trigger: true
-      - get: ubuntu-18.04
+      - get: <%= base_image %>
         params: {save: true}
         trigger: true
       - get: latest
@@ -94,7 +96,7 @@ jobs:
     - put: <%= image_resource_name("edge") %>
       params:
         build: kubernetes-resource
-        load_base: ubuntu-18.04
+        load_base: <%= base_image %>
         build_args_file: output/build-args-file
     on_success:
       put: notify
@@ -122,7 +124,7 @@ jobs:
     - aggregate:
       - get: kubernetes-resource-release
         trigger: true
-      - get: ubuntu-18.04
+      - get: <%= base_image %>
         params: {save: true}
         trigger: true
       - get: <%= version %>
@@ -133,7 +135,7 @@ jobs:
     - put: <%= image_resource_name(version) %>
       params:
         build: kubernetes-resource-release
-        load_base: ubuntu-18.04
+        load_base: <%= base_image %>
         build_args_file: output/build-args-file
     on_success:
       put: notify
