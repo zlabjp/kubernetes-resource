@@ -10,6 +10,7 @@ A Concourse resource for controlling the Kubernetes cluster.
 
 The version of this resource corresponds to the version of kubectl. We recommend using different version depending on the kubernetes version of the cluster.
 
+ - `zlabjp/kubernetes-resource:1.12` ([stable-1.12](https://storage.googleapis.com/kubernetes-release/release/stable-1.12.txt))
  - `zlabjp/kubernetes-resource:1.11` ([stable-1.11](https://storage.googleapis.com/kubernetes-release/release/stable-1.11.txt))
  - `zlabjp/kubernetes-resource:1.10` ([stable-1.10](https://storage.googleapis.com/kubernetes-release/release/stable-1.10.txt))
  - `zlabjp/kubernetes-resource:1.9` ([stable-1.9](https://storage.googleapis.com/kubernetes-release/release/stable-1.9.txt))
@@ -76,7 +77,7 @@ resource_types:
   type: docker-image
   source:
     repository: zlabjp/kubernetes-resource
-    tag: "1.11"
+    tag: "1.12"
 
 resources:
 - name: kubernetes-production
