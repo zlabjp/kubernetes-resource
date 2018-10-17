@@ -34,9 +34,6 @@ setup_kubectl() {
     # Optional. The address and port of the API server. Requires token.
     local server
     server="$(jq -r '.source.server // ""' < "$payload")"
-    # Optional. Bearer token for authentication to the API server. Requires server.
-    local token
-    token="$(jq -r '.source.token // ""' < "$payload")"
     # Optional. A certificate file for the certificate authority.
     local certificate_authority
     certificate_authority="$(jq -r '.source.certificate_authority // ""' < "$payload")"
@@ -45,22 +42,8 @@ setup_kubectl() {
     local insecure_skip_tls_verify
     insecure_skip_tls_verify="$(jq -r '.source.insecure_skip_tls_verify // ""' < "$payload")"
 
-    if [[ -z "$server" || -z "$token" ]]; then
-      echoerr 'You must specify "server" and "token", if not specify "kubeconfig".'
-      exit 1
-    fi
-
-    local -r AUTH_NAME=auth
     local -r CLUSTER_NAME=cluster
     local -r CONTEXT_NAME=kubernetes-resource
-
-    # Build options for kubectl config set-credentials
-    # Avoid to expose the token string by using placeholder
-    local set_credentials_opts
-    set_credentials_opts=("--token=**********")
-    exe kubectl config set-credentials "$AUTH_NAME" "${set_credentials_opts[@]}"
-    # placeholder is replaced with actual token string
-    sed -i -e "s/[*]\\{10\\}/$token/" "$KUBECONFIG"
 
     # Build options for kubectl config set-cluster
     local set_cluster_opts
@@ -76,7 +59,7 @@ setup_kubectl() {
     fi
     exe kubectl config set-cluster "$CLUSTER_NAME" "${set_cluster_opts[@]}"
 
-    exe kubectl config set-context "$CONTEXT_NAME" --user="$AUTH_NAME" --cluster="$CLUSTER_NAME"
+    exe kubectl config set-context "$CONTEXT_NAME" --cluster="$CLUSTER_NAME"
 
     exe kubectl config use-context "$CONTEXT_NAME"
 
@@ -110,6 +93,24 @@ setup_kubectl() {
   fi
   if [[ -n "$namespace" ]]; then
     exe kubectl config set-context "$(kubectl config current-context)" --namespace="$namespace"
+  fi
+  
+  # if providing a token we set a user and override context to support both kubeconfig and generated config
+  local token
+  token="$(jq -r '.source.token // ""' < "$payload")"
+  if [[ -n "$token" ]]; then 
+    local -r AUTH_NAME=auth
+
+    # Build options for kubectl config set-credentials
+    # Avoid to expose the token string by using placeholder
+    local set_credentials_opts
+    set_credentials_opts=("--token=**********")
+    exe kubectl config set-credentials "$AUTH_NAME" "${set_credentials_opts[@]}"
+    # placeholder is replaced with actual token string
+    sed -i -e "s/[*]\\{10\\}/$token/" "$KUBECONFIG"
+
+    # override user of context to one with token   
+    exe kubectl config set-context "$(kubectl config current-context)" --user="$AUTH_NAME" 
   fi
 
   # Optional. The name of the kubeconfig context to use.
