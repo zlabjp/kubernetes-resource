@@ -35,8 +35,8 @@ The version of this resource corresponds to the version of kubectl. We recommend
 
 ### cluster configs
 
-- `server`: *Optional.* The address and port of the API server.
-- `token`: *Optional.* Bearer token for authentication to the API server.
+- `server`: *Optional.* The address and port of the API server. Requires `token`.
+- `token`: *Optional.* Bearer token for authentication to the API server. Requires `server`.
 - `namespace`: *Optional.* The namespace scope. Defaults to `default`. If set along with `kubeconfig`, `namespace` will override the namespace in the current-context
 - `certificate_authority`: *Optional.* A certificate file for the certificate authority.
     ```yaml
