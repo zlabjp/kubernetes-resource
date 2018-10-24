@@ -1,7 +1,8 @@
 **Is this a BUG REPORT or FEATURE REQUEST?**:
 
-- [ ] bug
-- [ ] feature
+<!-- Delete only one line -->
+- bug
+- feature
 
 **What happened**:
 
