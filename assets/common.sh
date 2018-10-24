@@ -11,6 +11,13 @@ setup_kubectl() {
   local payload
   payload=$1
 
+  # the entry name for auth of kubeconfig
+  local -r AUTH_NAME=auth
+  # the entry name for cluster of kubeconfig
+  local -r CLUSTER_NAME=cluster
+  # the entry name for context of kubeconfig
+  local -r CONTEXT_NAME=kubernetes-resource
+
   KUBECONFIG="$(mktemp "$TMPDIR/kubernetes-resource-kubeconfig.XXXXXX")"
   export KUBECONFIG
 
@@ -42,9 +49,6 @@ setup_kubectl() {
     local insecure_skip_tls_verify
     insecure_skip_tls_verify="$(jq -r '.source.insecure_skip_tls_verify // ""' < "$payload")"
 
-    local -r CLUSTER_NAME=cluster
-    local -r CONTEXT_NAME=kubernetes-resource
-
     # Build options for kubectl config set-cluster
     local set_cluster_opts
     set_cluster_opts=("--server=$server")
@@ -73,14 +77,26 @@ setup_kubectl() {
         echoerr 'You must specify aws_eks_cluster_name when using aws_iam_authenticator.'
         exit 1
       fi
-      echo "    exec:
+      local kubeconfig_file_aws
+      kubeconfig_file_aws="$(mktemp "$TMPDIR/kubernetes-resource-kubeconfig-aws.XXXXXX")"
+      cat <<EOF > "$kubeconfig_file_aws"
+users:
+- name: ${AUTH_NAME}
+  user:
+    exec:
       apiVersion: client.authentication.k8s.io/v1alpha1
       args:
       - token
       - -i
       - ${aws_eks_cluster_name}
       command: aws-iam-authenticator
-      env: null" >> "$KUBECONFIG"
+      env: null
+EOF
+      # Merge two kubeconfig files
+      local tmpfile
+      tmpfile="$(mktemp)"
+      KUBECONFIG="$KUBECONFIG:$kubeconfig_file_aws" kubectl config view --flatten > "$tmpfile"
+      cat "$tmpfile" > "$KUBECONFIG"
     fi
   fi
 
@@ -99,8 +115,6 @@ setup_kubectl() {
   local token
   token="$(jq -r '.source.token // ""' < "$payload")"
   if [[ -n "$token" ]]; then 
-    local -r AUTH_NAME=auth
-
     # Build options for kubectl config set-credentials
     # Avoid to expose the token string by using placeholder
     local set_credentials_opts
@@ -109,8 +123,8 @@ setup_kubectl() {
     # placeholder is replaced with actual token string
     sed -i -e "s/[*]\\{10\\}/$token/" "$KUBECONFIG"
 
-    # override user of context to one with token   
-    exe kubectl config set-context "$(kubectl config current-context)" --user="$AUTH_NAME" 
+    # override user of context to one with token
+    exe kubectl config set-context "$(kubectl config current-context)" --user="$AUTH_NAME"
   fi
 
   # Optional. The name of the kubeconfig context to use.

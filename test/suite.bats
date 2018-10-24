@@ -19,6 +19,8 @@ setup() {
   kubectl create -n $namespace rolebinding --clusterrole=cluster-admin --serviceaccount=$namespace:default testaccount
   # get default service account
   serviceaccount=$(kubectl get -n $namespace serviceaccount default -o json | jq -r '.secrets[0].name')
+  # Extract server from service account for testing
+  server="$(kubectl get -n $namespace secret "$serviceaccount" -o json | jq -r '.data["server"]' | base64 -d)"
   # Extract token from service account for testing
   token="$(kubectl get -n $namespace secret "$serviceaccount" -o json | jq -r '.data["token"]' | base64 -d)"
 }
@@ -28,6 +30,14 @@ teardown() {
   kubectl delete ns "$namespace"
   # Remove a temporary kueconfig file
   rm "$kubeconfig_file"
+}
+
+@test "with outputs.use_aws_iam_authenticator" {
+  run assets/out <<< "$(jq -n '{"source": {"use_aws_iam_authenticator": true, "aws_eks_cluster_name": "eks-cluster01", "server": $server, "token": $token}, "params": {"kubectl": "get po"}}' \
+    --arg server "$server" \
+    --arg token "$token" \
+    --arg kubectl "get po nginx")"
+  assert_not_match 'did not find expected key' "$output"
 }
 
 @test "with source.kubeconfig" {
