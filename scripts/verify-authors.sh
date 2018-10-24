@@ -20,4 +20,5 @@ if [[ $ret -eq 0 ]]; then
   echo "AUTHORS is up to date."
 else
   echo "AUTHORS is out of date. Please run scripts/update-authors.sh."
+  exit 1
 fi
