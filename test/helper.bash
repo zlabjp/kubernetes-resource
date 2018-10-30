@@ -39,3 +39,11 @@ assert_match() {
     return 1
   fi
 }
+
+assert_not_match() {
+  if [[ "$2" =~ $1 ]]; then
+    echo "expected: $1"
+    echo "actual: $2"
+    return 1
+  fi
+}
