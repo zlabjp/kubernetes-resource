@@ -67,6 +67,11 @@ setup_kubectl() {
 
     exe kubectl config use-context "$CONTEXT_NAME"
 
+    # Optional. use AWS_ACCESS_KEY_ID environment variable
+    aws_access_key_id="$(jq -r '.params.aws_access_key_id // ""' < "$payload")"
+    # Optional. use AWS_SECRET_ACCESS_KEY environment variable
+    aws_secret_access_key="$(jq -r '.params.aws_secret_access_key // ""' < "$payload")"
+
     # Optional. Use the AWS EKS authenticator
     local use_aws_iam_authenticator
     use_aws_iam_authenticator="$(jq -r '.source.use_aws_iam_authenticator // ""' < "$payload")"
@@ -77,6 +82,10 @@ setup_kubectl() {
         echoerr 'You must specify aws_eks_cluster_name when using aws_iam_authenticator.'
         exit 1
       fi
+
+      [[ -n $aws_access_key_id ]] && export AWS_ACCESS_KEY_ID=$aws_access_key_id
+      [[ -n $aws_secret_access_key ]] && export AWS_ACCESS_KEY_ID=$aws_secret_access_key
+
       local kubeconfig_file_aws
       kubeconfig_file_aws="$(mktemp "$TMPDIR/kubernetes-resource-kubeconfig-aws.XXXXXX")"
       cat <<EOF > "$kubeconfig_file_aws"
@@ -110,11 +119,11 @@ EOF
   if [[ -n "$namespace" ]]; then
     exe kubectl config set-context "$(kubectl config current-context)" --namespace="$namespace"
   fi
-  
+
   # if providing a token we set a user and override context to support both kubeconfig and generated config
   local token
   token="$(jq -r '.source.token // ""' < "$payload")"
-  if [[ -n "$token" ]]; then 
+  if [[ -n "$token" ]]; then
     # Build options for kubectl config set-credentials
     # Avoid to expose the token string by using placeholder
     local set_credentials_opts
