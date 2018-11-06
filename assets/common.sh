@@ -49,6 +49,9 @@ setup_kubectl() {
     local insecure_skip_tls_verify
     insecure_skip_tls_verify="$(jq -r '.source.insecure_skip_tls_verify // ""' < "$payload")"
 
+    local certificate_authority_data
+    certificate_authority_data="$(jq -r '.source.certificate_authority_data // ""' < "$payload")"
+
     # Build options for kubectl config set-cluster
     local set_cluster_opts
     set_cluster_opts=("--server=$server")
@@ -63,13 +66,20 @@ setup_kubectl() {
     fi
     exe kubectl config set-cluster "$CLUSTER_NAME" "${set_cluster_opts[@]}"
 
-    exe kubectl config set-context "$CONTEXT_NAME" --cluster="$CLUSTER_NAME"
+    #Had to do this becuase certificate-authority-data isnt a support set-cluster operation
+    #https://github.com/kubernetes/kubectl/issues/501
+    if [[ -n "$certificate_authority_data" ]]; then
+      exe kubectl config set clusters.$CLUSTER_NAME.certificate-authority-data "$certificate_authority_data"
+    fi
+
+    exe kubectl config set-context "$CONTEXT_NAME" --cluster="$CLUSTER_NAME" --user "$AUTH_NAME"
 
     exe kubectl config use-context "$CONTEXT_NAME"
 
     # Optional. Use the AWS EKS authenticator
     local use_aws_iam_authenticator
     use_aws_iam_authenticator="$(jq -r '.source.use_aws_iam_authenticator // ""' < "$payload")"
+
     local aws_eks_cluster_name
     aws_eks_cluster_name="$(jq -r '.source.aws_eks_cluster_name // ""' < "$payload")"
     if [[ "$use_aws_iam_authenticator" == "true" ]]; then
@@ -110,11 +120,11 @@ EOF
   if [[ -n "$namespace" ]]; then
     exe kubectl config set-context "$(kubectl config current-context)" --namespace="$namespace"
   fi
-  
+
   # if providing a token we set a user and override context to support both kubeconfig and generated config
   local token
   token="$(jq -r '.source.token // ""' < "$payload")"
-  if [[ -n "$token" ]]; then 
+  if [[ -n "$token" ]]; then
     # Build options for kubectl config set-credentials
     # Avoid to expose the token string by using placeholder
     local set_credentials_opts
