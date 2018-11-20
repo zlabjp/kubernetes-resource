@@ -63,7 +63,7 @@ setup_kubectl() {
     fi
     exe kubectl config set-cluster "$CLUSTER_NAME" "${set_cluster_opts[@]}"
 
-    exe kubectl config set-context "$CONTEXT_NAME" --cluster="$CLUSTER_NAME"
+    exe kubectl config set-context "$CONTEXT_NAME" --cluster="$CLUSTER_NAME" --user "$AUTH_NAME"
 
     exe kubectl config use-context "$CONTEXT_NAME"
 
@@ -110,11 +110,11 @@ EOF
   if [[ -n "$namespace" ]]; then
     exe kubectl config set-context "$(kubectl config current-context)" --namespace="$namespace"
   fi
-  
+
   # if providing a token we set a user and override context to support both kubeconfig and generated config
   local token
   token="$(jq -r '.source.token // ""' < "$payload")"
-  if [[ -n "$token" ]]; then 
+  if [[ -n "$token" ]]; then
     # Build options for kubectl config set-credentials
     # Avoid to expose the token string by using placeholder
     local set_credentials_opts
