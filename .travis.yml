@@ -5,9 +5,9 @@ go:
 
 env:
   matrix:
-  - KUBECTL_VERSION=v1.13.0
-  - KUBECTL_VERSION=v1.12.0
-  - KUBECTL_VERSION=v1.11.0
+  - KUBECTL_VERSION=v1.13.0 NODE_VERSION=v1.12.3 # v1.13.x hasn't been released yet
+  - KUBECTL_VERSION=v1.12.0 NODE_VERSION=v1.12.3
+  - KUBECTL_VERSION=v1.11.0 NODE_VERSION=v1.11.3
 
 services:
 - docker
@@ -18,7 +18,7 @@ before_script:
 # Build and install kind
 - go get sigs.k8s.io/kind
 # Create a new kubernetes cluster
-- kind create cluster
+- kind create cluster --image="kindest/node:${NODE_VERSION}"
 # Set KUBECONFIG environment variable
 - export KUBECONFIG="$(kind get kubeconfig-path)"
 # Show version
