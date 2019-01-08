@@ -44,7 +44,7 @@ teardown() {
   run assets/out <<< "$(jq -n '{"source": {"kubeconfig": $kubeconfig}, "params": {"kubectl": $kubectl}}' \
     --arg kubeconfig "$(cat "$kubeconfig_file")" \
     --arg kubectl "run nginx --image nginx")"
-  assert_match 'deployment.apps "nginx" created' "$output"
+  assert_match 'deployment.apps/nginx created' "$output"
   assert_success
 }
 
@@ -93,7 +93,7 @@ teardown() {
   run assets/out <<< "$(jq -n '{"source": {"kubeconfig": $kubeconfig}, "params": {"kubectl": $kubectl}}' \
     --arg kubeconfig "$(cat "$kubeconfig_file")" \
     --arg kubectl "patch deploy nginx -p '{\"spec\":{\"template\":{\"metadata\":{\"labels\":{\"updated_at\":\"'\$(date +%s)'\"}}}}}'")"
-  assert_match 'deployment.extensions "nginx" patched' "$output"
+  assert_match 'deployment.extensions/nginx patched' "$output"
   assert_success
 
   run kubectl --kubeconfig "$kubeconfig_file" get deploy nginx -o go-template --template "{{.spec.template.metadata.labels.updated_at}}"
@@ -106,6 +106,6 @@ teardown() {
   run assets/out <<< "$(jq -n '{"source": {"kubeconfig": $kubeconfig}, "params": {"kubectl": $kubectl}}' \
     --arg kubeconfig "$(cat "$kubeconfig_file")" \
     --arg kubectl "run nginx --image nginx --requests='cpu=1000'")"
-  assert_match 'deployment.apps "nginx" created' "$output"
+  assert_match 'deployment.apps/nginx created' "$output"
   assert_failure
 }

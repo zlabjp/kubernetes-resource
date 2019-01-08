@@ -1,41 +1,44 @@
-sudo: required
+language: go
 
-language: bash
+go:
+- "1.11.x"
+
+env:
+  matrix:
+  - KUBECTL_VERSION=v1.13.0 NODE_VERSION=v1.12.3 # v1.13.x hasn't been released yet
+  - KUBECTL_VERSION=v1.12.0 NODE_VERSION=v1.12.3
+  - KUBECTL_VERSION=v1.11.0 NODE_VERSION=v1.11.3
 
 services:
 - docker
 
-sudo: required
-
-env:
-  global:
-  - TMPDIR=/tmp
-  - CHANGE_MINIKUBE_NONE_USER=true
-  - MINIKUBE_VERSION=v0.28.0
-  - MINIKUBE_ARGS="--vm-driver=none --bootstrapper=localkube --extra-config=apiserver.Authorization.Mode=RBAC"
-  matrix:
-  - KUBE_VERSION=v1.10.0
-  - KUBE_VERSION=v1.11.0
-
-matrix:
-  allow_failures:
-    - env: KUBE_VERSION=v1.11.0
-
 before_script:
-# Download kubectl, which is a requirement for using minikube.
-- curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBE_VERSION}/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
-# Download minikube.
-- curl -Lo minikube https://storage.googleapis.com/minikube/releases/${MINIKUBE_VERSION}/minikube-linux-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
-- sudo minikube start --kubernetes-version=${KUBE_VERSION} ${MINIKUBE_ARGS}
-# Fix the kubectl context, as it's often stale.
-- sudo minikube update-context
-# Prevent Permission denied
-- sudo chown -R ${USER} ${HOME}/.kube ${HOME}/.minikube
-# Wait for Kubernetes to be up and ready.
-- JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do sleep 1; done
+# Download and install kubectl
+- curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+# Build and install kind
+- go get sigs.k8s.io/kind
+# Create a new kubernetes cluster
+- kind create cluster --image="kindest/node:${NODE_VERSION}"
+# Set KUBECONFIG environment variable
+- export KUBECONFIG="$(kind get kubeconfig-path)"
+# Show version
+- kubectl version
 
 script:
-- ./scripts/verify-authors.sh
-- make lint
 - make test
-- make image
+
+matrix:
+  include:
+  - &bash
+    language: bash
+    go: null
+    env: null
+    before_script: null
+    script:
+    - ./scripts/verify-authors.sh
+  - <<: *bash
+    script:
+    - make lint
+  - <<: *bash
+    script:
+    - make image
