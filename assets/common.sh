@@ -74,10 +74,10 @@ setup_kubectl() {
     aws_eks_cluster_name="$(jq -r '.source.aws_eks_cluster_name // ""' < "$payload")"
     local aws_eks_assume_role
     aws_eks_assume_role="$(jq -r '.source.aws_eks_assume_role // ""' < "$payload")"
-		if [[ "$aws_eks_assume_role" ]]; then
-			aws_eks_assume_role="- r
+    if [[ "$aws_eks_assume_role" ]]; then
+      aws_eks_assume_role="- r
       - ${aws_eks_assume_role}"
-		fi
+    fi
     if [[ "$use_aws_iam_authenticator" == "true" ]]; then
       if [ -z "$aws_eks_cluster_name" ]; then
         echoerr 'You must specify aws_eks_cluster_name when using aws_iam_authenticator.'
