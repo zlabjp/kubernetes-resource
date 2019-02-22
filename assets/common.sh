@@ -75,7 +75,7 @@ setup_kubectl() {
     local aws_eks_assume_role
     aws_eks_assume_role="$(jq -r '.source.aws_eks_assume_role // ""' < "$payload")"
     if [[ "$aws_eks_assume_role" ]]; then
-      aws_eks_assume_role="- r
+      aws_eks_assume_role="- -r
       - ${aws_eks_assume_role}"
     fi
     if [[ "$use_aws_iam_authenticator" == "true" ]]; then
