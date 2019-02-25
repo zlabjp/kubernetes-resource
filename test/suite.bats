@@ -40,6 +40,14 @@ teardown() {
   assert_not_match 'did not find expected key' "$output"
 }
 
+@test "with outputs.aws_eks_assume_role" {
+  run assets/out <<< "$(jq -n '{"source": {"use_aws_iam_authenticator": true, "aws_eks_cluster_name": "eks-cluster01", "aws_eks_assume_role": "arn:role", "server": $server, "token": $token}, "params": {"kubectl": "get po"}}' \
+    --arg server "$server" \
+    --arg token "$token" \
+    --arg kubectl "get po nginx")"
+  assert_not_match 'did not find expected key' "$output"
+}
+
 @test "with source.kubeconfig" {
   run assets/out <<< "$(jq -n '{"source": {"kubeconfig": $kubeconfig}, "params": {"kubectl": $kubectl}}' \
     --arg kubeconfig "$(cat "$kubeconfig_file")" \
