@@ -47,9 +47,9 @@ teardown() {
 }
 
 @test "with source.kubeconfig" {
-  run assets/out <<< "$(jq -n '{"source": {"kubeconfig": $kubeconfig}, "params": {"kubectl": $kubectl}}' \
+  run assets/out <<< "$(jq -n '{"source": {"kubeconfig": $kubeconfig}, "params": {"kubectl": $kubectl, "wait_until_ready": 60}}' \
     --arg kubeconfig "$(cat "$kubeconfig_file")" \
-    --arg kubectl "run nginx --image nginx")"
+    --arg kubectl "create deployment nginx --image nginx")"
   assert_match 'deployment.apps/nginx created' "$output"
   assert_success
 }
