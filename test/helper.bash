@@ -10,7 +10,7 @@ assert_success() {
 
 assert_failure() {
   if [[ "$status" == 0 ]]; then
-    echo "expected: non-zero exit codde"
+    echo "expected: non-zero exit code"
     echo "actual: $status"
     return 1
   fi
