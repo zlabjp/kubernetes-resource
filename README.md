@@ -13,12 +13,6 @@ The version of this resource corresponds to the version of kubectl. We recommend
  - `zlabjp/kubernetes-resource:1.14` ([stable-1.14](https://storage.googleapis.com/kubernetes-release/release/stable-1.14.txt))
  - `zlabjp/kubernetes-resource:1.13` ([stable-1.13](https://storage.googleapis.com/kubernetes-release/release/stable-1.13.txt))
  - `zlabjp/kubernetes-resource:1.12` ([stable-1.12](https://storage.googleapis.com/kubernetes-release/release/stable-1.12.txt))
- - `zlabjp/kubernetes-resource:1.11` ([stable-1.11](https://storage.googleapis.com/kubernetes-release/release/stable-1.11.txt))
- - `zlabjp/kubernetes-resource:1.10` ([stable-1.10](https://storage.googleapis.com/kubernetes-release/release/stable-1.10.txt))
- - `zlabjp/kubernetes-resource:1.9` ([stable-1.9](https://storage.googleapis.com/kubernetes-release/release/stable-1.9.txt))
- - `zlabjp/kubernetes-resource:1.8` ([stable-1.8](https://storage.googleapis.com/kubernetes-release/release/stable-1.8.txt))
- - `zlabjp/kubernetes-resource:1.7` ([stable-1.7](https://storage.googleapis.com/kubernetes-release/release/stable-1.7.txt))
- - `zlabjp/kubernetes-resource:1.6` ([stable-1.6](https://storage.googleapis.com/kubernetes-release/release/stable-1.6.txt))
  - `zlabjp/kubernetes-resource:latest` ([latest](https://storage.googleapis.com/kubernetes-release/release/latest.txt))
 
 ## Source Configuration
