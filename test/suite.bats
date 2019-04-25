@@ -46,6 +46,13 @@ teardown() {
   assert_not_match 'did not find expected key' "$output"
 }
 
+@test "with outputs.aws_access_credentials" {
+  run assets/out <<< "$(jq -n '{"source": {"use_aws_iam_authenticator": true, "aws_eks_cluster_name": "eks-cluster01", "aws_access_key_id": "KEY", "aws_secret_access_key": "SECRET", "aws_session_token": "Session", "server": $server, "token": $token}, "params": {"kubectl": "get po"}}' \
+    --arg server "$server" \
+    --arg token "$token")"
+  assert_not_match 'did not find expected key' "$output"
+}
+
 @test "with source.kubeconfig" {
   run assets/out <<< "$(jq -n '{"source": {"kubeconfig": $kubeconfig}, "params": {"kubectl": $kubectl, "wait_until_ready": 60}}' \
     --arg kubeconfig "$(cat "$kubeconfig_file")" \
