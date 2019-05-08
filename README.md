@@ -45,6 +45,9 @@ The version of this resource corresponds to the version of kubectl. We recommend
 - `use_aws_iam_authenticator`: *Optional.* If true, the aws_iam_authenticator, required for connecting with EKS, is used. Requires `aws_eks_cluster_name`. Defaults to `false`.
 - `aws_eks_cluster_name`: *Optional.* the AWS EKS cluster name, required when `use_aws_iam_authenticator` is true.
 - `aws_eks_assume_role`: *Optional.* the AWS IAM role ARN to assume.
+- `aws_access_key_id`: *Optional.* AWS access key to use for iam authenticator.
+- `aws_secret_access_key`: *Optional.* AWS secret key to use for iam authenticator.
+- `aws_session_token`: *Optional.* AWS session token (assumed role) to use for iam authenticator.
 
 ## Behavior
 
