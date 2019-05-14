@@ -41,7 +41,7 @@ The version of this resource corresponds to the version of kubectl. We recommend
         ...
         -----END CERTIFICATE-----
     ```
-- `certificate_authority_file`: *Optional.* A file to read the certificate from.
+- `certificate_authority_file`: *Optional.* A file to read the certificate from. Only takes effect when `certificate_authority_file` is not set.
     ```yaml
     certificate_authority_file: ca_certs.crt
     ```
