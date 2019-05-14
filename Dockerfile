@@ -11,7 +11,7 @@ ARG KUBERNETES_VERSION=
 
 RUN set -x && \
     apt-get update && \
-    apt-get install -y jq curl && \
+    apt-get install -y jq curl gettext-base && \
     [ -z "$KUBERNETES_VERSION" ] && KUBERNETES_VERSION=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt) ||: && \
     curl -s -LO https://storage.googleapis.com/kubernetes-release/release/${KUBERNETES_VERSION}/bin/linux/amd64/kubectl && \
     chmod +x ./kubectl && \

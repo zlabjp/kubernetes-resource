@@ -34,12 +34,16 @@ The version of this resource corresponds to the version of kubectl. We recommend
 - `server`: *Optional.* The address and port of the API server.
 - `token`: *Optional.* Bearer token for authentication to the API server.
 - `namespace`: *Optional.* The namespace scope. Defaults to `default`. If set along with `kubeconfig`, `namespace` will override the namespace in the current-context
-- `certificate_authority`: *Optional.* A certificate file for the certificate authority.
+- `certificate_authority`: *Optional.* A certificate for the certificate authority.
     ```yaml
     certificate_authority: |
         -----BEGIN CERTIFICATE-----
         ...
         -----END CERTIFICATE-----
+    ```
+- `certificate_authority_file`: *Optional.* A file to read the certificate from.
+    ```yaml
+    certificate_authority_file: ca_certs.crt
     ```
 - `insecure_skip_tls_verify`: *Optional.* If true, the API server's certificate will not be checked for validity. This will make your HTTPS connections insecure. Defaults to `false`.
 - `use_aws_iam_authenticator`: *Optional.* If true, the aws_iam_authenticator, required for connecting with EKS, is used. Requires `aws_eks_cluster_name`. Defaults to `false`.
