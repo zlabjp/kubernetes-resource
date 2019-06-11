@@ -41,13 +41,25 @@ setup_kubectl() {
     # Optional. The address and port of the API server. Requires token.
     local server
     server="$(jq -r '.source.server // ""' < "$payload")"
-    # Optional. A certificate file for the certificate authority.
+    # Optional. A file to read the certificate from.
+    local certificate_authority_file
+    certificate_authority_file="$(jq -r '.source.certificate_authority_file // ""' < "$payload")"
+    # Optional. A certificate for the certificate authority.
     local certificate_authority
     certificate_authority="$(jq -r '.source.certificate_authority // ""' < "$payload")"
     # Optional. If true, the API server's certificate will not be checked for
     # validity. This will make your HTTPS connections insecure. Defaults to false.
     local insecure_skip_tls_verify
     insecure_skip_tls_verify="$(jq -r '.source.insecure_skip_tls_verify // ""' < "$payload")"
+
+    # When not set, try to get certificate_authority from a file, if provided
+    if [[ ! -n "${certificate_authority}" && -n "${certificate_authority_file}" ]]; then
+        if [[ ! -f "${certificate_authority_file}" ]]; then
+            echoerr "certificate authority file '$certificate_authority_file' does not exist"
+            exit 1
+        fi
+        certificate_authority="$(cat "${certificate_authority_file}")"
+    fi
 
     # Build options for kubectl config set-cluster
     local set_cluster_opts
