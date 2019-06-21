@@ -2,9 +2,9 @@ language: bash
 
 env:
   matrix:
-  - KUBECTL_VERSION=v1.14.0 NODE_VERSION=v1.14.0
-  - KUBECTL_VERSION=v1.13.0 NODE_VERSION=v1.13.3
-  - KUBECTL_VERSION=v1.12.0 NODE_VERSION=v1.12.3
+  - KUBECTL_VERSION=v1.15.0 NODE_VERSION=v1.14.2@sha256:33539d830a6cf20e3e0a75d0c46a4e94730d78c7375435e6b49833d81448c319
+  - KUBECTL_VERSION=v1.14.0 NODE_VERSION=v1.14.2@sha256:33539d830a6cf20e3e0a75d0c46a4e94730d78c7375435e6b49833d81448c319
+  - KUBECTL_VERSION=v1.13.0 NODE_VERSION=v1.13.6@sha256:9e07014fb48c746deb98ec8aafd58c3918622eca6063e643c6e6d86c86e170b4
 
 services:
 - docker
@@ -13,7 +13,7 @@ before_script:
 # Download and install kubectl
 - curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
 # Download and install kind
-- curl -Lo kind https://github.com/kubernetes-sigs/kind/releases/download/0.2.1/kind-linux-amd64 && chmod +x kind && sudo mv kind /usr/local/bin/
+- curl -Lo kind https://github.com/kubernetes-sigs/kind/releases/download/v0.3.0/kind-linux-amd64 && chmod +x kind && sudo mv kind /usr/local/bin/
 # Create a new kubernetes cluster
 - kind create cluster --image="kindest/node:${NODE_VERSION}"
 # Set KUBECONFIG environment variable
