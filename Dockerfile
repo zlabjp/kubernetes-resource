@@ -1,7 +1,7 @@
-FROM golang:1.10
+FROM golang:1.12
 
 RUN set -x && \
-    go get -u -v github.com/kubernetes-sigs/aws-iam-authenticator/cmd/aws-iam-authenticator
+    GO111MODULE=on go get -u -v github.com/kubernetes-sigs/aws-iam-authenticator/cmd/aws-iam-authenticator
 
 FROM ubuntu:18.04
 
