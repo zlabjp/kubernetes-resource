@@ -10,9 +10,9 @@ A Concourse resource for controlling the Kubernetes cluster.
 
 The version of this resource corresponds to the version of kubectl. We recommend using different version depending on the kubernetes version of the cluster.
 
+ - `zlabjp/kubernetes-resource:1.15` ([stable-1.15](https://storage.googleapis.com/kubernetes-release/release/stable-1.15.txt))
  - `zlabjp/kubernetes-resource:1.14` ([stable-1.14](https://storage.googleapis.com/kubernetes-release/release/stable-1.14.txt))
  - `zlabjp/kubernetes-resource:1.13` ([stable-1.13](https://storage.googleapis.com/kubernetes-release/release/stable-1.13.txt))
- - `zlabjp/kubernetes-resource:1.12` ([stable-1.12](https://storage.googleapis.com/kubernetes-release/release/stable-1.12.txt))
  - `zlabjp/kubernetes-resource:latest` ([latest](https://storage.googleapis.com/kubernetes-release/release/latest.txt))
 
 ## Source Configuration
