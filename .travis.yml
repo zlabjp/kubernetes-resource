@@ -2,9 +2,9 @@ language: bash
 
 env:
   matrix:
+  - KUBECTL_VERSION=v1.16.0 NODE_VERSION=v1.15.3
   - KUBECTL_VERSION=v1.15.0 NODE_VERSION=v1.15.3
   - KUBECTL_VERSION=v1.14.0 NODE_VERSION=v1.14.2
-  - KUBECTL_VERSION=v1.13.0 NODE_VERSION=v1.13.6
 
 services:
 - docker
