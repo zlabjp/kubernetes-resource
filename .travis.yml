@@ -5,6 +5,8 @@ env:
   - KUBECTL_VERSION=v1.17.0 NODE_VERSION=v1.17.0
   - KUBECTL_VERSION=v1.16.1 NODE_VERSION=v1.16.1
   - KUBECTL_VERSION=v1.15.0 NODE_VERSION=v1.15.3
+  global:
+  - KIND_VERSION=v0.6.1
 
 services:
 - docker
@@ -13,11 +15,9 @@ before_script:
 # Download and install kubectl
 - curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
 # Download and install kind
-- curl -Lo kind https://github.com/kubernetes-sigs/kind/releases/download/v0.5.1/kind-linux-amd64 && chmod +x kind && sudo mv kind /usr/local/bin/
+- curl -Lo kind https://github.com/kubernetes-sigs/kind/releases/download/${KIND_VERSION}/kind-linux-amd64 && chmod +x kind && sudo mv kind /usr/local/bin/
 # Create a new kubernetes cluster
 - kind create cluster --image="kindest/node:${NODE_VERSION}"
-# Set KUBECONFIG environment variable
-- export KUBECONFIG="$(kind get kubeconfig-path)"
 # Show version
 - kubectl version
 
